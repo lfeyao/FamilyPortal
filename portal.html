@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+    <title>Home Portal - Secure Family Access</title>
+    
+    <!-- Google Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;700&display=swap');
+        
+        :root {
+            --primary-dark: #1a1815;
+            --primary-warm: #8b5a3c;
+            --accent-gold: #d4a574;
+            --accent-sage: #7a8471;
+            --cream: #faf8f3;
+            --soft-gray: #e8e4dd;
+            --text-primary: #2c2925;
+            --text-secondary: #6b635a;
+            --danger: #c9302c;
+            --success: #5cb85c;
+            --admin-purple: #6b46c1;
+            --shadow-soft: 0 4px 6px rgba(26, 24, 21, 0.07);
+            --shadow-medium: 0 10px 25px rgba(26, 24, 21, 0.1);
+            --shadow-large: 0 20px 40px rgba(26, 24, 21, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--soft-gray) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(139, 90, 60, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(122, 132, 113, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(212, 165, 116, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Welcome Section */
+        #welcomeSection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 24px;
+            padding: 60px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-large);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-warm), var(--accent-gold), var(--accent-sage));
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .lock-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, var(--primary-warm), var(--accent-gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-medium);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .lock-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        /* Google Sign In Button Container */
+        #googleSignInDiv {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        /* Loading State */
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid var(--soft-gray);
+            border-top-color: var(--primary-warm);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error Message */
+        .error-message {
+            background: rgba(201, 48, 44, 0.1);
+            color: var(--danger);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+            animation: shake 0.5s;
+            margin: 20px 0;
+        }
+
+        .success-message {
+            background: rgba(92, 184, 92, 0.1);
+            color: var(--success);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+            margin: 20px 0;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Portal Section */
+        #portalSection {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .portal-header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-medium);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .portal-header h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--accent-sage);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .user-email {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .admin-badge {
+            background: var(--admin-purple);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+
+        .btn-logout {
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        /* Portal Grid */
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .portal-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow-medium);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-card.admin-only {
+            border: 2px solid var(--admin-purple);
+        }
+
+        .portal-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(139, 90, 60, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-large);
+        }
+
+        .portal-card:hover::after {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-sage), var(--primary-warm));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-only .card-icon {
+            background: linear-gradient(135deg, var(--admin-purple), var(--accent-gold));
+        }
+
+        .card-icon svg {
+            width: 26px;
+            height: 26px;
+            fill: white;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Security Badge */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--soft-gray);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            justify-content: center;
+        }
+
+        .security-badge svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--accent-sage);
+        }
+
+        /* Authorized Users Note */
+        .auth-note {
+            background: rgba(122, 132, 113, 0.1);
+            border-left: 3px solid var(--accent-sage);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .welcome-card {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .portal-header {
+                padding: 20px;
+            }
+
+            .portal-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .portal-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .portal-card {
+                padding: 25px;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .welcome-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Section -->
+        <div id="welcomeSection">
+            <div class="welcome-card">
+                <div class="lock-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                    </svg>
+                </div>
+                <h1>Welcome Home</h1>
+                <p class="subtitle">Secure family portal access</p>
+                
+                <div class="error-message" id="errorMessage">You are not authorized to access this portal.</div>
+                <div class="success-message" id="successMessage">Authentication successful! Loading portal...</div>
+                
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                
+                <!-- Google Sign-In Button -->
+                <div id="googleSignInDiv"></div>
+                
+                <div class="auth-note">
+                    <strong>Note:</strong> This portal is restricted to authorized family members only. Sign in with your authorized Google account to continue.
+                </div>
+                
+                <div class="security-badge">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                    </svg>
+                    <span>OAuth 2.0 Secure Authentication</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portal Section -->
+        <div id="portalSection">
+            <div class="portal-header">
+                <h2>Family Portal</h2>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <img src="" alt="User" id="userPhoto">
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Loading...</div>
+                        <div class="user-email" id="userEmail">Loading...</div>
+                        <div class="admin-badge" id="adminBadge" style="display: none;">ADMIN</div>
+                    </div>
+                    <button class="btn-logout" onclick="signOut()">Sign Out</button>
+                </div>
+            </div>
+
+            <div class="portal-grid" id="portalGrid">
+                <!-- Regular Cards -->
+                <div class="portal-card" onclick="openSection('utilities')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Utilities & Services</h3>
+                    <p class="card-description">Account numbers, service contacts, and payment schedules for all household utilities.</p>
+                </div>
+
+                <div class="portal-card" onclick="openSection('maintenance')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Home Maintenance</h3>
+                    <p class="card-description">Schedules, warranties, contractor information, and maintenance logs.</p>
+                </div>
+
+                <div class="portal-card" onclick="openSection('emergency')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M10.01 21.01c0 1.1.89 1.99 1.99 1.99s1.99-.89 1.99-1.99h-3.98zm8.87-4.19V11c0-3.25-2.25-5.97-5.29-6.69v-.72C13.59 2.71 12.88 2 12 2s-1.59.71-1.59 1.59v.72C7.37 5.03 5.12 7.75 5.12 11v5.82L3 18.94V20h18v-1.06l-2.12-2.12zM16 13.01h-3v3h-2v-3H8V11h3V8h2v3h3v2.01z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Emergency Contacts</h3>
+                    <p class="card-description">Important phone numbers, medical information, and emergency procedures.</p>
+                </div>
+
+                <div class="portal-card" onclick="openSection('documents')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Important Documents</h3>
+                    <p class="card-description">Insurance policies, warranties, manuals, and household documentation.</p>
+                </div>
+
+                <div class="portal-card" onclick="openSection('wifi')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Network & Devices</h3>
+                    <p class="card-description">WiFi passwords, smart home devices, and network configuration.</p>
+                </div>
+
+                <div class="portal-card" onclick="openSection('calendar')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Family Calendar</h3>
+                    <p class="card-description">Important dates, appointments, and family schedules.</p>
+                </div>
+
+                <!-- Admin Only Cards (will be dynamically shown/hidden) -->
+                <div class="portal-card admin-only" id="adminCard1" style="display: none;" onclick="openSection('users')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">User Management</h3>
+                    <p class="card-description">Manage authorized users and access permissions for the portal.</p>
+                </div>
+
+                <div class="portal-card admin-only" id="adminCard2" style="display: none;" onclick="openSection('logs')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Access Logs</h3>
+                    <p class="card-description">View portal access history and security events.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Replace with your actual Google Client ID and admin email
+        const GOOGLE_CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com';
+        const ADMIN_EMAIL = 'your-admin-email@gmail.com'; // Replace with your admin email
+        
+        // List of authorized email addresses (add family members here)
+        const AUTHORIZED_USERS = [
+            'your-admin-email@gmail.com',
+            'family-member1@gmail.com',
+            'family-member2@gmail.com'
+            // Add more authorized emails here
+        ];
+
+        let currentUser = null;
+
+        // Initialize Google Sign-In
+        window.onload = function() {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleCredentialResponse,
+                auto_select: true,
+                cancel_on_tap_outside: false
+            });
+
+            google.accounts.id.renderButton(
+                document.getElementById("googleSignInDiv"),
+                { 
+                    theme: "outline",
+                    size: "large",
+                    width: "300",
+                    text: "sign_in_with",
+                    shape: "rectangular",
+                    logo_alignment: "left"
+                }
+            );
+
+            // Try to auto-login if user was previously signed in
+            google.accounts.id.prompt();
+        };
+
+        // Handle Google Sign-In response
+        function handleCredentialResponse(response) {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            loadingSpinner.style.display = 'block';
+
+            // Decode JWT token to get user info
+            const responsePayload = decodeJwtResponse(response.credential);
+            
+            // Check if user is authorized
+            if (AUTHORIZED_USERS.includes(responsePayload.email)) {
+                currentUser = {
+                    email: responsePayload.email,
+                    name: responsePayload.name,
+                    picture: responsePayload.picture,
+                    isAdmin: responsePayload.email === ADMIN_EMAIL
+                };
+
+                // Show success message
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+                
+                // Load portal after a short delay
+                setTimeout(() => {
+                    loadPortal();
+                }, 1500);
+            } else {
+                // User not authorized
+                loadingSpinner.style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+                
+                // Sign out the user from Google
+                google.accounts.id.disableAutoSelect();
+            }
+        }
+
+        // Decode JWT token
+        function decodeJwtResponse(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        // Load the portal
+        function loadPortal() {
+            // Update user info in header
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userEmail').textContent = currentUser.email;
+            
+            // Set user photo
+            const userPhoto = document.getElementById('userPhoto');
+            userPhoto.src = currentUser.picture;
+            userPhoto.onerror = function() {
+                // If photo fails to load, show initials
+                document.getElementById('userAvatar').innerHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, var(--accent-sage), var(--primary-warm)); color:white; font-weight:600;">${currentUser.name.charAt(0).toUpperCase()}</div>`;
+            };
+
+            // Show admin badge and cards if user is admin
+            if (currentUser.isAdmin) {
+                document.getElementById('adminBadge').style.display = 'block';
+                document.getElementById('adminCard1').style.display = 'block';
+                document.getElementById('adminCard2').style.display = 'block';
+            }
+
+            // Hide welcome section and show portal
+            document.getElementById('welcomeSection').style.display = 'none';
+            document.getElementById('portalSection').style.display = 'block';
+
+            // Log access (in a real application, this would be sent to a server)
+            logAccess();
+        }
+
+        // Sign out function
+        function signOut() {
+            google.accounts.id.disableAutoSelect();
+            
+            // Clear current user
+            currentUser = null;
+            
+            // Reset UI
+            document.getElementById('portalSection').style.display = 'none';
+            document.getElementById('welcomeSection').style.display = 'flex';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('loadingSpinner').style.display = 'none';
+            
+            // Clear admin elements
+            document.getElementById('adminBadge').style.display = 'none';
+            document.getElementById('adminCard1').style.display = 'none';
+            document.getElementById('adminCard2').style.display = 'none';
+        }
+
+        // Open section (placeholder function)
+        function openSection(section) {
+            // Check if this is an admin section and user has permission
+            if ((section === 'users' || section === 'logs') && !currentUser.isAdmin) {
+                alert('You do not have permission to access this section.');
+                return;
+            }
+            
+            // In a real application, this would navigate to the section or load content
+            alert(`Opening ${section} section...`);
+            
+            // Log the access
+            logSectionAccess(section);
+        }
+
+        // Log access (placeholder - in production, send to server)
+        function logAccess() {
+            const accessLog = {
+                user: currentUser.email,
+                name: currentUser.name,
+                timestamp: new Date().toISOString(),
+                action: 'login',
+                isAdmin: currentUser.isAdmin
+            };
+            console.log('Access Log:', accessLog);
+            
+            // In production, send this to your server
+            // fetch('/api/log-access', { method: 'POST', body: JSON.stringify(accessLog) });
+        }
+
+        // Log section access
+        function logSectionAccess(section) {
+            const sectionLog = {
+                user: currentUser.email,
+                section: section,
+                timestamp: new Date().toISOString()
+            };
+            console.log('Section Access:', sectionLog);
+            
+            // In production, send this to your server
+            // fetch('/api/log-section', { method: 'POST', body: JSON.stringify(sectionLog) });
+        }
+    </script>
+</body>
+</html>
