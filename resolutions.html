@@ -17,6 +17,7 @@
             --soft-gray: #e8e4dd;
             --text-primary: #2c2925;
             --text-secondary: #6b635a;
+            --danger: #c9302c;
             --shadow-soft: 0 4px 6px rgba(26, 24, 21, 0.07);
             --shadow-medium: 0 10px 25px rgba(26, 24, 21, 0.1);
             --shadow-large: 0 20px 40px rgba(26, 24, 21, 0.15);
@@ -128,6 +129,8 @@
             border-radius: 16px;
             padding: 20px;
             min-height: 300px;
+            display: flex;
+            flex-direction: column;
         }
 
         .column-header {
@@ -151,13 +154,66 @@
             letter-spacing: 1px;
         }
 
+        .add-resolution {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .add-resolution input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid var(--soft-gray);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .add-resolution input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .add-resolution input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .btn-add {
+            background: var(--accent-gold);
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-add:hover {
+            background: var(--primary-warm);
+            transform: scale(1.05);
+        }
+
+        .btn-add svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
         .resolution-list {
             list-style: none;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .resolution-item {
             background: white;
-            padding: 12px 15px;
+            padding: 12px 40px 12px 15px;
             border-radius: 10px;
             margin-bottom: 10px;
             box-shadow: var(--shadow-soft);
@@ -165,23 +221,56 @@
             line-height: 1.5;
             position: relative;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
         }
 
         .resolution-item:hover {
-            transform: translateX(5px);
             box-shadow: var(--shadow-medium);
-        }
-
-        .resolution-item.completed {
-            opacity: 0.6;
-            text-decoration: line-through;
         }
 
         .resolution-item::before {
             content: '•';
             color: var(--accent-gold);
             font-weight: bold;
-            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .resolution-text {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .btn-delete {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .resolution-item:hover .btn-delete {
+            opacity: 1;
+        }
+
+        .btn-delete:hover {
+            background: rgba(201, 48, 44, 0.1);
+        }
+
+        .btn-delete svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--danger);
         }
 
         .empty-state {
@@ -217,6 +306,10 @@
             .year-header {
                 font-size: 1.5rem;
             }
+
+            .btn-delete {
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -233,54 +326,167 @@
         </div>
 
         <!-- 2025 -->
-        <div class="year-section">
+        <div class="year-section" data-year="2025">
             <h2 class="year-header">2025</h2>
             <div class="resolutions-grid">
-                <div class="resolution-column">
+                <div class="resolution-column" data-person="dan">
                     <div class="column-header">
                         <span class="column-emoji">🐟</span>
-                        <span class="column-name">Fish</span>
+                        <span class="column-name">Dan</span>
                     </div>
-                    <ul class="resolution-list">
-                        <li class="resolution-item">Add your resolutions here</li>
-                    </ul>
+                    <div class="add-resolution">
+                        <input type="text" placeholder="Add resolution..." onkeypress="if(event.key === 'Enter') addResolution(this)">
+                        <button class="btn-add" onclick="addResolution(this.previousElementSibling)">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        </button>
+                    </div>
+                    <ul class="resolution-list"></ul>
                 </div>
 
-                <div class="resolution-column">
+                <div class="resolution-column" data-person="cat">
                     <div class="column-header">
                         <span class="column-emoji">🐱</span>
                         <span class="column-name">Cat</span>
                     </div>
-                    <ul class="resolution-list">
-                        <li class="resolution-item">Add your resolutions here</li>
-                    </ul>
+                    <div class="add-resolution">
+                        <input type="text" placeholder="Add resolution..." onkeypress="if(event.key === 'Enter') addResolution(this)">
+                        <button class="btn-add" onclick="addResolution(this.previousElementSibling)">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        </button>
+                    </div>
+                    <ul class="resolution-list"></ul>
                 </div>
 
-                <div class="resolution-column">
+                <div class="resolution-column" data-person="sebastian">
                     <div class="column-header">
                         <span class="column-emoji">🐧</span>
-                        <span class="column-name">Penguin</span>
+                        <span class="column-name">Sebastian</span>
                     </div>
-                    <ul class="resolution-list">
-                        <li class="resolution-item">Add your resolutions here</li>
-                    </ul>
+                    <div class="add-resolution">
+                        <input type="text" placeholder="Add resolution..." onkeypress="if(event.key === 'Enter') addResolution(this)">
+                        <button class="btn-add" onclick="addResolution(this.previousElementSibling)">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        </button>
+                    </div>
+                    <ul class="resolution-list"></ul>
                 </div>
 
-                <div class="resolution-column">
+                <div class="resolution-column" data-person="elle">
                     <div class="column-header">
                         <span class="column-emoji">🦫</span>
-                        <span class="column-name">Capybara</span>
+                        <span class="column-name">Elle</span>
                     </div>
-                    <ul class="resolution-list">
-                        <li class="resolution-item">Add your resolutions here</li>
-                    </ul>
+                    <div class="add-resolution">
+                        <input type="text" placeholder="Add resolution..." onkeypress="if(event.key === 'Enter') addResolution(this)">
+                        <button class="btn-add" onclick="addResolution(this.previousElementSibling)">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        </button>
+                    </div>
+                    <ul class="resolution-list"></ul>
                 </div>
             </div>
         </div>
-
-        <!-- Future years can be added here -->
-        
     </div>
+
+    <script>
+        const STORAGE_KEY = 'yuFamilyResolutions';
+
+        // Load resolutions from localStorage
+        function loadResolutions() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : {};
+        }
+
+        // Save resolutions to localStorage
+        function saveResolutions(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // Render resolutions for a column
+        function renderResolutions(year, person) {
+            const data = loadResolutions();
+            const key = `${year}-${person}`;
+            const resolutions = data[key] || [];
+            
+            const column = document.querySelector(`.year-section[data-year="${year}"] .resolution-column[data-person="${person}"]`);
+            const list = column.querySelector('.resolution-list');
+            
+            list.innerHTML = '';
+            
+            if (resolutions.length === 0) {
+                list.innerHTML = '<li class="empty-state">No resolutions yet</li>';
+                return;
+            }
+            
+            resolutions.forEach((text, index) => {
+                const li = document.createElement('li');
+                li.className = 'resolution-item';
+                li.innerHTML = `
+                    <span class="resolution-text">${escapeHtml(text)}</span>
+                    <button class="btn-delete" onclick="deleteResolution('${year}', '${person}', ${index})" title="Delete">
+                        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    </button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // Add a resolution
+        function addResolution(input) {
+            const text = input.value.trim();
+            if (!text) return;
+            
+            const column = input.closest('.resolution-column');
+            const yearSection = input.closest('.year-section');
+            const year = yearSection.dataset.year;
+            const person = column.dataset.person;
+            
+            const data = loadResolutions();
+            const key = `${year}-${person}`;
+            
+            if (!data[key]) data[key] = [];
+            data[key].push(text);
+            
+            saveResolutions(data);
+            renderResolutions(year, person);
+            
+            input.value = '';
+            input.focus();
+        }
+
+        // Delete a resolution
+        function deleteResolution(year, person, index) {
+            const data = loadResolutions();
+            const key = `${year}-${person}`;
+            
+            if (data[key]) {
+                data[key].splice(index, 1);
+                saveResolutions(data);
+                renderResolutions(year, person);
+            }
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize on page load
+        function init() {
+            const yearSections = document.querySelectorAll('.year-section');
+            yearSections.forEach(section => {
+                const year = section.dataset.year;
+                const columns = section.querySelectorAll('.resolution-column');
+                columns.forEach(column => {
+                    const person = column.dataset.person;
+                    renderResolutions(year, person);
+                });
+            });
+        }
+
+        window.onload = init;
+    </script>
 </body>
 </html>
-
