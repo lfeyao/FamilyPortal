@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Tic-Tac-Toe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f5ff;
+            --neon-pink: #ff00ff;
+            --neon-yellow: #ffff00;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --grid-line: #2a2a3a;
+            --win-glow: #00ff88;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(ellipse at 50% 0%, rgba(0, 245, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255, 0, 255, 0.08) 0%, transparent 40%),
+                linear-gradient(180deg, #0a0a0f 0%, #0f0f18 100%);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(0, 245, 255, 0.5);
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 12px 28px;
+            border: 2px solid var(--grid-line);
+            background: transparent;
+            color: #888;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .mode-btn:hover::before {
+            left: 100%;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .mode-btn.active {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3), inset 0 0 20px rgba(0, 245, 255, 0.1);
+        }
+
+        .status-bar {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding: 10px 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--grid-line);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-bar.x-turn {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
+        }
+
+        .status-bar.o-turn {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
+        }
+
+        .status-bar .x {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .status-bar .o {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .game-container {
+            position: relative;
+        }
+
+        .mega-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 15px;
+            background: var(--bg-card);
+            border: 2px solid var(--grid-line);
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .mini-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+            padding: 8px;
+            background: rgba(20, 20, 30, 0.8);
+            border: 2px solid var(--grid-line);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .mini-board.active {
+            border-color: var(--neon-yellow);
+            box-shadow: 0 0 25px rgba(255, 255, 0, 0.3), inset 0 0 15px rgba(255, 255, 0, 0.05);
+        }
+
+        .mini-board.won-x {
+            background: rgba(0, 245, 255, 0.15);
+            border-color: var(--neon-cyan);
+        }
+
+        .mini-board.won-o {
+            background: rgba(255, 0, 255, 0.15);
+            border-color: var(--neon-pink);
+        }
+
+        .mini-board.draw {
+            background: rgba(100, 100, 100, 0.2);
+            border-color: #555;
+        }
+
+        .mini-board.won-x::after,
+        .mini-board.won-o::after {
+            content: attr(data-winner);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .mini-board.won-x::after {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 30px var(--neon-cyan), 0 0 60px var(--neon-cyan);
+        }
+
+        .mini-board.won-o::after {
+            color: var(--neon-pink);
+            text-shadow: 0 0 30px var(--neon-pink), 0 0 60px var(--neon-pink);
+        }
+
+        .cell {
+            width: clamp(28px, 8vw, 45px);
+            height: clamp(28px, 8vw, 45px);
+            background: var(--bg-dark);
+            border: 1px solid var(--grid-line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mini-board.active .cell:not(.taken):hover {
+            background: rgba(255, 255, 0, 0.1);
+            border-color: var(--neon-yellow);
+        }
+
+        .cell.taken {
+            cursor: not-allowed;
+        }
+
+        .cell.x {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px var(--neon-cyan);
+            animation: markPlace 0.3s ease-out;
+        }
+
+        .cell.o {
+            color: var(--neon-pink);
+            text-shadow: 0 0 15px var(--neon-pink);
+            animation: markPlace 0.3s ease-out;
+        }
+
+        @keyframes markPlace {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .controls {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .reset-btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 12px 35px;
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: var(--neon-pink);
+            color: var(--bg-dark);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+        }
+
+        .game-over-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .game-over-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .game-over-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 30px;
+            animation: winPulse 1s ease-in-out infinite;
+        }
+
+        .game-over-text.x-wins {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 40px var(--neon-cyan), 0 0 80px var(--neon-cyan);
+        }
+
+        .game-over-text.o-wins {
+            color: var(--neon-pink);
+            text-shadow: 0 0 40px var(--neon-pink), 0 0 80px var(--neon-pink);
+        }
+
+        .game-over-text.draw {
+            color: #888;
+            text-shadow: 0 0 40px rgba(255,255,255,0.3);
+        }
+
+        @keyframes winPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .play-again-btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 15px 50px;
+            background: transparent;
+            border: 2px solid var(--win-glow);
+            color: var(--win-glow);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            transition: all 0.3s ease;
+        }
+
+        .play-again-btn:hover {
+            background: var(--win-glow);
+            color: var(--bg-dark);
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.5);
+        }
+
+        .rules-hint {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #555;
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+
+        .rules-hint span {
+            color: var(--neon-yellow);
+        }
+
+        .thinking {
+            display: inline-block;
+            animation: thinking 1s ease-in-out infinite;
+        }
+
+        @keyframes thinking {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Ultimate Tic-Tac-Toe</h1>
+    
+    <div class="mode-selector">
+        <button class="mode-btn active" data-mode="2p">2 Player</button>
+        <button class="mode-btn" data-mode="1p">Vs Computer</button>
+    </div>
+
+    <div class="status-bar">
+        <span class="x">X</span>'s Turn
+    </div>
+
+    <div class="game-container">
+        <div class="mega-board" id="megaBoard"></div>
+    </div>
+
+    <div class="controls">
+        <button class="reset-btn" id="resetBtn">New Game</button>
+    </div>
+
+    <p class="rules-hint">
+        Win small boards to claim them. Your move determines which board your opponent plays in next.
+        <span>Yellow glow</span> shows the active board.
+    </p>
+
+    <div class="game-over-overlay" id="gameOverOverlay">
+        <div class="game-over-text" id="gameOverText"></div>
+        <button class="play-again-btn" id="playAgainBtn">Play Again</button>
+    </div>
+
+    <script>
+        const WIN_PATTERNS = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        let gameMode = '2p';
+        let currentPlayer = 'X';
+        let activeBoard = null;
+        let miniBoards = Array(9).fill(null).map(() => Array(9).fill(null));
+        let miniBoardWinners = Array(9).fill(null);
+        let gameOver = false;
+        let aiThinking = false;
+
+        const megaBoard = document.getElementById('megaBoard');
+        const statusBar = document.querySelector('.status-bar');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const gameOverText = document.getElementById('gameOverText');
+        const resetBtn = document.getElementById('resetBtn');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const modeBtns = document.querySelectorAll('.mode-btn');
+
+        function init() {
+            megaBoard.innerHTML = '';
+            for (let b = 0; b < 9; b++) {
+                const miniBoardEl = document.createElement('div');
+                miniBoardEl.className = 'mini-board active';
+                miniBoardEl.dataset.board = b;
+                
+                for (let c = 0; c < 9; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.board = b;
+                    cell.dataset.cell = c;
+                    cell.addEventListener('click', handleCellClick);
+                    miniBoardEl.appendChild(cell);
+                }
+                megaBoard.appendChild(miniBoardEl);
+            }
+            updateStatus();
+        }
+
+        function handleCellClick(e) {
+            if (gameOver || aiThinking) return;
+            
+            const boardIdx = parseInt(e.target.dataset.board);
+            const cellIdx = parseInt(e.target.dataset.cell);
+            
+            if (!isValidMove(boardIdx, cellIdx)) return;
+            
+            makeMove(boardIdx, cellIdx);
+            
+            if (!gameOver && gameMode === '1p' && currentPlayer === 'O') {
+                aiThinking = true;
+                updateStatus();
+                setTimeout(makeAIMove, 600);
+            }
+        }
+
+        function isValidMove(boardIdx, cellIdx) {
+            if (miniBoardWinners[boardIdx]) return false;
+            if (miniBoards[boardIdx][cellIdx]) return false;
+            if (activeBoard !== null && activeBoard !== boardIdx) return false;
+            return true;
+        }
+
+        function makeMove(boardIdx, cellIdx) {
+            miniBoards[boardIdx][cellIdx] = currentPlayer;
+            
+            const cell = document.querySelector(`.cell[data-board="${boardIdx}"][data-cell="${cellIdx}"]`);
+            cell.textContent = currentPlayer;
+            cell.classList.add('taken', currentPlayer.toLowerCase());
+            
+            const winner = checkWinner(miniBoards[boardIdx]);
+            if (winner) {
+                miniBoardWinners[boardIdx] = winner;
+                const miniBoardEl = document.querySelector(`.mini-board[data-board="${boardIdx}"]`);
+                miniBoardEl.classList.add(`won-${winner.toLowerCase()}`);
+                miniBoardEl.dataset.winner = winner;
+            } else if (miniBoards[boardIdx].every(c => c !== null)) {
+                miniBoardWinners[boardIdx] = 'draw';
+                const miniBoardEl = document.querySelector(`.mini-board[data-board="${boardIdx}"]`);
+                miniBoardEl.classList.add('draw');
+            }
+            
+            const megaWinner = checkWinner(miniBoardWinners.map(w => w === 'draw' ? null : w));
+            if (megaWinner) {
+                endGame(megaWinner);
+                return;
+            }
+            
+            if (miniBoardWinners.every(w => w !== null)) {
+                endGame('draw');
+                return;
+            }
+            
+            if (miniBoardWinners[cellIdx]) {
+                activeBoard = null;
+            } else {
+                activeBoard = cellIdx;
+            }
+            
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            updateActiveBoards();
+            updateStatus();
+        }
+
+        function checkWinner(board) {
+            for (const pattern of WIN_PATTERNS) {
+                const [a, b, c] = pattern;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return board[a];
+                }
+            }
+            return null;
+        }
+
+        function updateActiveBoards() {
+            document.querySelectorAll('.mini-board').forEach((el, idx) => {
+                el.classList.remove('active');
+                if (activeBoard === null) {
+                    if (!miniBoardWinners[idx]) {
+                        el.classList.add('active');
+                    }
+                } else if (idx === activeBoard) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
+        function updateStatus() {
+            statusBar.classList.remove('x-turn', 'o-turn');
+            
+            if (aiThinking) {
+                statusBar.innerHTML = `<span class="o">O</span> <span class="thinking">Thinking...</span>`;
+                statusBar.classList.add('o-turn');
+            } else {
+                const playerSpan = currentPlayer === 'X' 
+                    ? '<span class="x">X</span>' 
+                    : '<span class="o">O</span>';
+                statusBar.innerHTML = `${playerSpan}'s Turn`;
+                statusBar.classList.add(currentPlayer === 'X' ? 'x-turn' : 'o-turn');
+            }
+        }
+
+        function endGame(result) {
+            gameOver = true;
+            
+            if (result === 'draw') {
+                gameOverText.textContent = "It's a Draw!";
+                gameOverText.className = 'game-over-text draw';
+            } else {
+                gameOverText.textContent = `${result} Wins!`;
+                gameOverText.className = `game-over-text ${result.toLowerCase()}-wins`;
+            }
+            
+            gameOverOverlay.classList.add('show');
+        }
+
+        function resetGame() {
+            currentPlayer = 'X';
+            activeBoard = null;
+            miniBoards = Array(9).fill(null).map(() => Array(9).fill(null));
+            miniBoardWinners = Array(9).fill(null);
+            gameOver = false;
+            aiThinking = false;
+            
+            gameOverOverlay.classList.remove('show');
+            init();
+        }
+
+        function makeAIMove() {
+            const move = findBestMove();
+            if (move) {
+                makeMove(move.board, move.cell);
+            }
+            aiThinking = false;
+            if (!gameOver) updateStatus();
+        }
+
+        function findBestMove() {
+            const validBoards = activeBoard !== null 
+                ? [activeBoard] 
+                : miniBoardWinners.map((w, i) => w === null ? i : -1).filter(i => i !== -1);
+            
+            // Priority 1: Win a mini-board
+            for (const b of validBoards) {
+                const winMove = findWinningMove(b, 'O');
+                if (winMove !== null) return { board: b, cell: winMove };
+            }
+            
+            // Priority 2: Block opponent from winning mini-board
+            for (const b of validBoards) {
+                const blockMove = findWinningMove(b, 'X');
+                if (blockMove !== null) return { board: b, cell: blockMove };
+            }
+            
+            // Priority 3: Strategic play - center of boards, don't send to good boards
+            let bestMove = null;
+            let bestScore = -Infinity;
+            
+            for (const b of validBoards) {
+                for (let c = 0; c < 9; c++) {
+                    if (miniBoards[b][c] === null) {
+                        let score = 0;
+                        
+                        // Prefer center cells
+                        if (c === 4) score += 3;
+                        // Prefer corners
+                        if ([0, 2, 6, 8].includes(c)) score += 2;
+                        
+                        // Avoid sending opponent to boards they're winning
+                        if (!miniBoardWinners[c]) {
+                            const oppWinMove = findWinningMove(c, 'X');
+                            if (oppWinMove !== null) score -= 5;
+                        }
+                        
+                        // Prefer sending to already won boards (gives us free choice)
+                        if (miniBoardWinners[c]) score += 4;
+                        
+                        // Add some randomness
+                        score += Math.random() * 0.5;
+                        
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestMove = { board: b, cell: c };
+                        }
+                    }
+                }
+            }
+            
+            return bestMove;
+        }
+
+        function findWinningMove(boardIdx, player) {
+            const board = miniBoards[boardIdx];
+            
+            for (const pattern of WIN_PATTERNS) {
+                const [a, b, c] = pattern;
+                const cells = [board[a], board[b], board[c]];
+                const playerCount = cells.filter(c => c === player).length;
+                const emptyCount = cells.filter(c => c === null).length;
+                
+                if (playerCount === 2 && emptyCount === 1) {
+                    if (board[a] === null) return a;
+                    if (board[b] === null) return b;
+                    if (board[c] === null) return c;
+                }
+            }
+            return null;
+        }
+
+        // Event listeners
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                gameMode = btn.dataset.mode;
+                resetGame();
+            });
+        });
+
+        resetBtn.addEventListener('click', resetGame);
+        playAgainBtn.addEventListener('click', resetGame);
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

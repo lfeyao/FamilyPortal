@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome Home - Family Hub</title>
+    <title>Welcome Home - Yu Family Lagoon</title>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;700&display=swap');
@@ -34,7 +34,7 @@
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background: var(--cream);
+            background: white;
             color: var(--text-primary);
             overflow-x: hidden;
             line-height: 1.6;
@@ -45,7 +45,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(250, 248, 243, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             box-shadow: var(--shadow-soft);
             z-index: 1000;
@@ -53,7 +53,7 @@
         }
 
         nav.scrolled {
-            background: rgba(250, 248, 243, 0.98);
+            background: rgba(255, 255, 255, 0.98);
             box-shadow: var(--shadow-medium);
         }
 
@@ -78,13 +78,20 @@
         }
 
         .logo-icon {
-            width: 35px;
-            height: 35px;
-            background: linear-gradient(135deg, var(--primary-warm), var(--accent-gold));
-            border-radius: 8px;
+            width: 110px;
+            height: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: transparent;
         }
 
         .logo-icon svg {
@@ -134,7 +141,7 @@
             justify-content: center;
             position: relative;
             padding: 80px 20px 40px;
-            background: linear-gradient(135deg, var(--cream) 0%, var(--soft-gray) 100%);
+            background: white;
         }
 
         .hero::before {
@@ -653,15 +660,14 @@
         <div class="nav-container">
             <a href="#" class="logo">
                 <div class="logo-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                    </svg>
+                    <img src="static/yu_crest.png" alt="Yu Crest">
                 </div>
-                Family Hub
+                Yu Family Lagoon
             </a>
             <div class="nav-links" id="navLinks">
                 <a href="#features" class="nav-link">Features</a>
                 <a href="#about" class="nav-link">About</a>
+                <a href="games/index.html" class="nav-link">Games</a>
                 <a href="#contact" class="nav-link">Contact</a>
                 <a href="portal.html" class="btn-login">Family Login</a>
             </div>
@@ -682,7 +688,7 @@
                 </svg>
                 Secure Family Portal
             </div>
-            <h1 class="hero-title">Welcome to Our<br>Family Hub</h1>
+            <h1 class="hero-title">Welcome to the<br>Yu Family Lagoon</h1>
             <p class="hero-subtitle">A private, secure space for managing household information, documents, and shared resources.</p>
             <div class="hero-cta">
                 <a href="portal.html" class="btn-hero btn-primary-hero">
@@ -830,7 +836,7 @@
     <!-- Footer -->
     <footer id="contact">
         <div class="footer-content">
-            <div class="footer-logo">Family Hub</div>
+            <div class="footer-logo">Yu Family Lagoon</div>
             <div class="footer-links">
                 <a href="#" class="footer-link">Privacy</a>
                 <a href="#" class="footer-link">Terms</a>
@@ -839,7 +845,7 @@
             </div>
             <div class="footer-divider"></div>
             <div class="footer-bottom">
-                © 2024 Family Hub. Created with care for our family.
+                © 2024 Yu Family Lagoon. Created with care for our family.
             </div>
         </div>
     </footer>
