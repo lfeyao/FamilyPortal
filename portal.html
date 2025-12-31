@@ -60,7 +60,7 @@
             background: white;
             border-radius: 24px;
             padding: 50px;
-            max-width: 600px;
+            max-width: 480px;
             width: 100%;
             box-shadow: var(--shadow-large);
             position: relative;
@@ -123,47 +123,33 @@
             font-weight: 400;
         }
 
-        /* Animal Lock Container */
-        .animal-lock-container {
+        .passphrase-container {
             margin: 30px 0;
         }
 
-        .lock-instruction {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-        }
-
-        .animal-locks {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .lock-wheel {
-            width: 80px;
-            height: 100px;
-            background: var(--cream);
+        .passphrase-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1.1rem;
+            border: 2px solid var(--soft-gray);
             border-radius: 12px;
-            border: 3px solid var(--soft-gray);
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
+            outline: none;
             transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+            text-align: center;
         }
 
-        .lock-wheel:hover {
+        .passphrase-input:focus {
             border-color: var(--accent-gold);
-            transform: scale(1.05);
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2);
         }
 
-        .lock-wheel.error {
+        .passphrase-input.error {
             border-color: var(--danger);
             animation: shake 0.5s ease;
         }
 
-        .lock-wheel.correct {
+        .passphrase-input.success {
             border-color: var(--success);
         }
 
@@ -171,32 +157,6 @@
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
-        }
-
-        .wheel-scroll {
-            height: 100%;
-            overflow-y: auto;
-            scroll-snap-type: y mandatory;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .wheel-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .animal-option {
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            scroll-snap-align: start;
-            font-size: 50px;
-            transition: transform 0.2s ease;
-        }
-
-        .animal-option:hover {
-            transform: scale(1.1);
         }
 
         .btn-unlock {
@@ -213,6 +173,7 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            margin-top: 20px;
         }
 
         .btn-unlock:hover {
@@ -247,6 +208,16 @@
             margin-top: 20px;
         }
 
+        .setup-message {
+            background: rgba(212, 165, 116, 0.15);
+            color: var(--primary-warm);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            display: none;
+        }
+
         .hint-text {
             font-size: 0.85rem;
             color: var(--text-secondary);
@@ -254,7 +225,6 @@
             font-style: italic;
         }
 
-        /* Portal Section */
         #portalSection {
             display: none;
             animation: fadeIn 0.6s ease-out;
@@ -399,20 +369,6 @@
                 font-size: 2.2rem;
             }
 
-            .animal-locks {
-                gap: 10px;
-            }
-
-            .lock-wheel {
-                width: 65px;
-                height: 85px;
-            }
-
-            .animal-option {
-                height: 85px;
-                font-size: 40px;
-            }
-
             .portal-header {
                 padding: 20px;
             }
@@ -439,22 +395,11 @@
             .welcome-card {
                 padding: 30px 20px;
             }
-
-            .lock-wheel {
-                width: 55px;
-                height: 75px;
-            }
-
-            .animal-option {
-                height: 75px;
-                font-size: 35px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Welcome Section -->
         <div id="welcomeSection">
             <div class="welcome-card">
                 <div class="lock-icon" id="lockIcon">
@@ -463,42 +408,36 @@
                     </svg>
                 </div>
                 <h1>Welcome Home</h1>
-                <p class="subtitle">Spin the animals to unlock the portal!</p>
+                <p class="subtitle" id="subtitleText">Enter the family passphrase</p>
                 
-                <div class="animal-lock-container">
-                    <p class="lock-instruction">Select the correct animal combination</p>
-                    
-                    <div class="animal-locks">
-                        <div class="lock-wheel" id="wheel1">
-                            <div class="wheel-scroll" data-wheel="1"></div>
-                        </div>
-                        <div class="lock-wheel" id="wheel2">
-                            <div class="wheel-scroll" data-wheel="2"></div>
-                        </div>
-                        <div class="lock-wheel" id="wheel3">
-                            <div class="wheel-scroll" data-wheel="3"></div>
-                        </div>
-                        <div class="lock-wheel" id="wheel4">
-                            <div class="wheel-scroll" data-wheel="4"></div>
-                        </div>
-                    </div>
+                <div class="passphrase-container">
+                    <input 
+                        type="password" 
+                        id="passphraseInput" 
+                        class="passphrase-input" 
+                        placeholder="Enter passphrase..."
+                        autocomplete="off"
+                        onkeypress="if(event.key === 'Enter') tryUnlock()"
+                    >
                     
                     <button class="btn-unlock" onclick="tryUnlock()">
                         <svg viewBox="0 0 24 24">
                             <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/>
                         </svg>
-                        Unlock
+                        <span id="btnText">Unlock</span>
                     </button>
                 </div>
                 
-                <div class="error-message" id="errorMessage">Wrong combination! Try again.</div>
-                <div class="success-message" id="successMessage">🎉 Unlocked! Welcome to the Lagoon!</div>
+                <div class="setup-message" id="setupMessage">
+                    🔐 <strong>First time setup!</strong> Choose a strong passphrase and share it with family members.
+                </div>
+                <div class="error-message" id="errorMessage">Incorrect passphrase. Try again!</div>
+                <div class="success-message" id="successMessage">🎉 Welcome to the Lagoon!</div>
                 
-                <p class="hint-text">Hint: Think about our family's favorite animals!</p>
+                <p class="hint-text" id="hintText">Ask a family member if you don't know the passphrase</p>
             </div>
         </div>
 
-        <!-- Portal Section -->
         <div id="portalSection">
             <div class="portal-header">
                 <h2>Yu Family Lagoon</h2>
@@ -585,94 +524,81 @@
     </div>
 
     <script>
-        // 20 Animal emojis for the lock wheels
-        const animals = [
-            '🐶', '🐱', '🐭', '🐹', '🐰', 
-            '🦊', '🐻', '🐼', '🐨', '🐯',
-            '🦁', '🐮', '🐷', '🐸', '🐵',
-            '🐧', '🐦', '🐤', '🦆', '🦅',
-        ];
+        const STORAGE_KEY = 'yuFamilyLagoonHash';
 
-        // Secret combination: 🐧(15) 🐱(1) 🐻(6) 🐼(7)
-        // SHA-256 hash of "🐧🐱🐻🐼"
-        const SECRET_HASH = '4e9ceb4bc26d3e3d16a60dcd2c0e6b3c1f8d4a5e7b2c9f0a1d3e5b7c9f2a4d6e';
-
-        let currentSelections = [0, 0, 0, 0];
-
-        // Hash function
-        async function hashCombo(indices) {
-            const text = indices.map(i => animals[i]).join('');
+        // SHA-256 hash function
+        async function hashPassphrase(passphrase) {
             const encoder = new TextEncoder();
-            const data = encoder.encode(text);
+            const data = encoder.encode(passphrase);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // Initialize wheels
-        function initWheels() {
-            document.querySelectorAll('.wheel-scroll').forEach((wheel, index) => {
-                animals.forEach((animal, animalIndex) => {
-                    const option = document.createElement('div');
-                    option.className = 'animal-option';
-                    option.textContent = animal;
-                    option.onclick = () => selectAnimal(index, animalIndex);
-                    wheel.appendChild(option);
-                });
-
-                wheel.addEventListener('scroll', () => {
-                    const scrollTop = wheel.scrollTop;
-                    const itemHeight = wheel.querySelector('.animal-option').offsetHeight;
-                    currentSelections[index] = Math.round(scrollTop / itemHeight);
-                });
-            });
-
-            // Generate and log the correct hash on load (for setup)
-            hashCombo([15, 1, 6, 7]).then(hash => {
-                console.log('Correct combination hash (🐧🐱🐻🐼):', hash);
-            });
+        function getStoredHash() {
+            return localStorage.getItem(STORAGE_KEY);
         }
 
-        function selectAnimal(wheelIndex, animalIndex) {
-            const wheel = document.querySelectorAll('.wheel-scroll')[wheelIndex];
-            const itemHeight = wheel.querySelector('.animal-option').offsetHeight;
-            wheel.scrollTo({
-                top: animalIndex * itemHeight,
-                behavior: 'smooth'
-            });
-            currentSelections[wheelIndex] = animalIndex;
+        function isFirstTimeSetup() {
+            return !getStoredHash();
         }
 
         async function tryUnlock() {
-            const wheels = document.querySelectorAll('.lock-wheel');
-            const userHash = await hashCombo(currentSelections);
-            const correctHash = await hashCombo([15, 1, 6, 7]); // 🐧🐱🐻🐼
+            const input = document.getElementById('passphraseInput');
+            const passphrase = input.value.trim();
             
-            const isCorrect = userHash === correctHash;
+            if (!passphrase) {
+                input.classList.add('error');
+                setTimeout(() => input.classList.remove('error'), 500);
+                return;
+            }
 
-            if (isCorrect) {
-                wheels.forEach(w => {
-                    w.classList.remove('error');
-                    w.classList.add('correct');
-                });
-                document.getElementById('lockIcon').classList.add('unlocked');
-                document.getElementById('lockSvg').innerHTML = '<path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/>';
-                document.getElementById('errorMessage').style.display = 'none';
-                document.getElementById('successMessage').style.display = 'block';
+            // Minimum passphrase length for security
+            if (passphrase.length < 8) {
+                document.getElementById('errorMessage').textContent = 'Passphrase must be at least 8 characters for security.';
+                document.getElementById('errorMessage').style.display = 'block';
+                input.classList.add('error');
+                setTimeout(() => input.classList.remove('error'), 500);
+                return;
+            }
 
-                setTimeout(() => {
-                    document.getElementById('welcomeSection').style.display = 'none';
-                    document.getElementById('portalSection').style.display = 'block';
-                }, 1500);
+            const userHash = await hashPassphrase(passphrase);
+            const storedHash = getStoredHash();
+            
+            // First time setup
+            if (!storedHash) {
+                if (confirm(`Set "${passphrase}" as the family passphrase?\n\nMake sure to:\n• Remember it!\n• Share it with family members\n• Use the same passphrase on other devices`)) {
+                    localStorage.setItem(STORAGE_KEY, userHash);
+                    unlockSuccess(input);
+                }
+                return;
+            }
+
+            // Verify passphrase
+            if (userHash === storedHash) {
+                unlockSuccess(input);
             } else {
-                wheels.forEach(w => {
-                    w.classList.remove('correct');
-                    w.classList.add('error');
-                    setTimeout(() => w.classList.remove('error'), 500);
-                });
+                input.classList.add('error');
+                setTimeout(() => input.classList.remove('error'), 500);
+                document.getElementById('errorMessage').textContent = 'Incorrect passphrase. Try again!';
                 document.getElementById('errorMessage').style.display = 'block';
                 document.getElementById('successMessage').style.display = 'none';
             }
+        }
+
+        function unlockSuccess(input) {
+            input.classList.remove('error');
+            input.classList.add('success');
+            document.getElementById('lockIcon').classList.add('unlocked');
+            document.getElementById('lockSvg').innerHTML = '<path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/>';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('setupMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('welcomeSection').style.display = 'none';
+                document.getElementById('portalSection').style.display = 'block';
+            }, 1000);
         }
 
         function lockPortal() {
@@ -680,16 +606,42 @@
             document.getElementById('welcomeSection').style.display = 'flex';
             document.getElementById('lockIcon').classList.remove('unlocked');
             document.getElementById('lockSvg').innerHTML = '<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>';
-            document.querySelectorAll('.lock-wheel').forEach(w => w.classList.remove('correct'));
+            document.getElementById('passphraseInput').value = '';
+            document.getElementById('passphraseInput').classList.remove('success');
             document.getElementById('successMessage').style.display = 'none';
             document.getElementById('errorMessage').style.display = 'none';
+            updateUIForMode();
         }
+
+        // Reset passphrase (run in browser console)
+        function resetPassphrase() {
+            if (confirm('Reset the passphrase? You will need to set a new one.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+        window.resetPassphrase = resetPassphrase;
 
         function openSection(section) {
             alert(`Opening ${section} section...`);
         }
 
-        window.onload = initWheels;
+        function updateUIForMode() {
+            const isSetup = isFirstTimeSetup();
+            document.getElementById('setupMessage').style.display = isSetup ? 'block' : 'none';
+            document.getElementById('subtitleText').textContent = isSetup 
+                ? 'Create a family passphrase' 
+                : 'Enter the family passphrase';
+            document.getElementById('btnText').textContent = isSetup ? 'Set Passphrase' : 'Unlock';
+            document.getElementById('hintText').textContent = isSetup 
+                ? 'Choose something memorable that only family knows!'
+                : 'Ask a family member if you don\'t know the passphrase';
+        }
+
+        window.onload = () => {
+            updateUIForMode();
+            document.getElementById('passphraseInput').focus();
+        };
     </script>
 </body>
 </html>
