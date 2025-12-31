@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Year Resolutions - Yu Family Lagoon</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;700&display=swap');
+        
+        :root {
+            --primary-dark: #1a1815;
+            --primary-warm: #8b5a3c;
+            --accent-gold: #d4a574;
+            --accent-sage: #7a8471;
+            --cream: #faf8f3;
+            --soft-gray: #e8e4dd;
+            --text-primary: #2c2925;
+            --text-secondary: #6b635a;
+            --shadow-soft: 0 4px 6px rgba(26, 24, 21, 0.07);
+            --shadow-medium: 0 10px 25px rgba(26, 24, 21, 0.1);
+            --shadow-large: 0 20px 40px rgba(26, 24, 21, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #faf8f3 0%, #f0ebe3 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-medium);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header h1 span {
+            font-size: 2rem;
+        }
+
+        .btn-back {
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-back svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .year-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .year-header {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            color: var(--primary-warm);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--soft-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .year-header::before {
+            content: '🎉';
+        }
+
+        .resolutions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .resolution-column {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 20px;
+            min-height: 300px;
+        }
+
+        .column-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--soft-gray);
+        }
+
+        .column-emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .column-name {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .resolution-list {
+            list-style: none;
+        }
+
+        .resolution-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-soft);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .resolution-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .resolution-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .resolution-item::before {
+            content: '•';
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .empty-state {
+            color: var(--text-secondary);
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .resolutions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .resolutions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .year-section {
+                padding: 20px;
+            }
+
+            .year-header {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span>✨</span> New Year Resolutions</h1>
+            <a href="portal.html" class="btn-back">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                Back to Portal
+            </a>
+        </div>
+
+        <!-- 2025 -->
+        <div class="year-section">
+            <h2 class="year-header">2025</h2>
+            <div class="resolutions-grid">
+                <div class="resolution-column">
+                    <div class="column-header">
+                        <span class="column-emoji">🐟</span>
+                        <span class="column-name">Fish</span>
+                    </div>
+                    <ul class="resolution-list">
+                        <li class="resolution-item">Add your resolutions here</li>
+                    </ul>
+                </div>
+
+                <div class="resolution-column">
+                    <div class="column-header">
+                        <span class="column-emoji">🐱</span>
+                        <span class="column-name">Cat</span>
+                    </div>
+                    <ul class="resolution-list">
+                        <li class="resolution-item">Add your resolutions here</li>
+                    </ul>
+                </div>
+
+                <div class="resolution-column">
+                    <div class="column-header">
+                        <span class="column-emoji">🐧</span>
+                        <span class="column-name">Penguin</span>
+                    </div>
+                    <ul class="resolution-list">
+                        <li class="resolution-item">Add your resolutions here</li>
+                    </ul>
+                </div>
+
+                <div class="resolution-column">
+                    <div class="column-header">
+                        <span class="column-emoji">🦫</span>
+                        <span class="column-name">Capybara</span>
+                    </div>
+                    <ul class="resolution-list">
+                        <li class="resolution-item">Add your resolutions here</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Future years can be added here -->
+        
+    </div>
+</body>
+</html>
+
