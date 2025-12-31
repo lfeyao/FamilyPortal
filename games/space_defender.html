@@ -22,6 +22,9 @@
             display: block;
             background: radial-gradient(ellipse at center, #1a0033 0%, #000000 100%);
             cursor: none;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .ui-overlay {
@@ -228,7 +231,7 @@
         <div class="wave-indicator" id="waveIndicator"></div>
 
         <div class="controls-hint" id="controlsHint">
-            🎮 Move: Mouse | Shoot: Auto | Dodge: Move Fast 🎮
+            🎮 Move: Mouse/Drag | Touch: Drag Your Finger | Shoot: Auto 🎮
         </div>
 
         <div class="menu" id="menu">
@@ -299,10 +302,44 @@
         // Mouse tracking
         let mouseX = canvas.width / 2;
         let mouseY = canvas.height / 2;
+        let isDragging = false;
 
         canvas.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Touch controls
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            isDragging = true;
+            const touch = e.touches[0];
+            mouseX = touch.clientX;
+            mouseY = touch.clientY;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (isDragging) {
+                const touch = e.touches[0];
+                mouseX = touch.clientX;
+                mouseY = touch.clientY;
+            }
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            isDragging = false;
         });
 
         // Initialize stars

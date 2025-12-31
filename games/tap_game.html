@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tap Reaction Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .timer {
+            color: #e74c3c;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .controls input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-start {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-start:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-start:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .game-button {
+            aspect-ratio: 1;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.2em;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-button:active {
+            transform: scale(0.95);
+        }
+
+        .game-button.green {
+            background: #2ecc71;
+            border-color: #27ae60;
+            animation: pulse-green 0.5s ease-in-out;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.6);
+        }
+
+        .game-button.red {
+            background: #e74c3c;
+            border-color: #c0392b;
+            animation: pulse-red 0.5s ease-in-out;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.1em;
+            color: #666;
+            min-height: 30px;
+            font-weight: 500;
+        }
+
+        .game-over {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .game-over h2 {
+            margin-bottom: 10px;
+        }
+
+        .game-over p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ Tap Reaction Game</h1>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Score</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Time Left</div>
+                <div class="stat-value timer" id="timer">30</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Best</div>
+                <div class="stat-value" id="best">0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <input type="number" id="timeInput" value="30" min="10" max="120" placeholder="Game duration (seconds)">
+            <button class="btn btn-start" id="startBtn" onclick="startGame()">Start Game</button>
+        </div>
+
+        <div class="game-grid" id="gameGrid">
+            <button class="game-button" onclick="tapButton(0)"></button>
+            <button class="game-button" onclick="tapButton(1)"></button>
+            <button class="game-button" onclick="tapButton(2)"></button>
+            <button class="game-button" onclick="tapButton(3)"></button>
+            <button class="game-button" onclick="tapButton(4)"></button>
+            <button class="game-button" onclick="tapButton(5)"></button>
+            <button class="game-button" onclick="tapButton(6)"></button>
+            <button class="game-button" onclick="tapButton(7)"></button>
+            <button class="game-button" onclick="tapButton(8)"></button>
+        </div>
+
+        <div class="message" id="message">Set your timer and click Start!</div>
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let gameActive = false;
+        let timerInterval = null;
+        let lightInterval = null;
+        let activeButtons = new Array(9).fill(null);
+        let bestScore = localStorage.getItem('tapGameBest') || 0;
+
+        document.getElementById('best').textContent = bestScore;
+
+        function startGame() {
+            const timeInput = document.getElementById('timeInput');
+            const duration = parseInt(timeInput.value);
+            
+            if (duration < 10 || duration > 120) {
+                alert('Please enter a time between 10 and 120 seconds');
+                return;
+            }
+
+            score = 0;
+            timeLeft = duration;
+            gameActive = true;
+            activeButtons.fill(null);
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('timer').textContent = timeLeft;
+            document.getElementById('message').textContent = 'Tap the green buttons! Avoid red! (-2 points)';
+            document.getElementById('startBtn').disabled = true;
+
+            // Clear all button states
+            const buttons = document.querySelectorAll('.game-button');
+            buttons.forEach(btn => {
+                btn.classList.remove('green', 'red');
+            });
+
+            // Start timer
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            // Start lighting up buttons
+            lightUpButtons();
+            lightInterval = setInterval(lightUpButtons, 600); // Faster! (was 800ms)
+        }
+
+        function lightUpButtons() {
+            if (!gameActive) return;
+
+            const buttons = document.querySelectorAll('.game-button');
+            
+            // Clear previous states
+            activeButtons.forEach((state, index) => {
+                if (state !== null) {
+                    buttons[index].classList.remove('green', 'red');
+                    activeButtons[index] = null;
+                }
+            });
+
+            // Light up 2-4 random buttons (more buttons = harder)
+            const numButtons = Math.floor(Math.random() * 3) + 2;
+            const indices = [];
+            
+            while (indices.length < numButtons) {
+                const idx = Math.floor(Math.random() * 9);
+                if (!indices.includes(idx)) {
+                    indices.push(idx);
+                }
+            }
+
+            indices.forEach(idx => {
+                // 50% chance green, 50% chance red (MUCH HARDER!)
+                const isGreen = Math.random() > 0.5;
+                buttons[idx].classList.add(isGreen ? 'green' : 'red');
+                activeButtons[idx] = isGreen ? 'green' : 'red';
+            });
+        }
+
+        function tapButton(index) {
+            if (!gameActive) return;
+
+            const state = activeButtons[index];
+            const buttons = document.querySelectorAll('.game-button');
+            
+            if (state === 'green') {
+                score++;
+                document.getElementById('score').textContent = score;
+                buttons[index].classList.remove('green');
+                activeButtons[index] = null;
+                showMessage('✓ +1', '#2ecc71');
+            } else if (state === 'red') {
+                score = Math.max(0, score - 2); // Lose 2 points! (HARDER)
+                document.getElementById('score').textContent = score;
+                buttons[index].classList.remove('red');
+                activeButtons[index] = null;
+                showMessage('✗ -2', '#e74c3c');
+            }
+        }
+
+        function showMessage(text, color) {
+            const message = document.getElementById('message');
+            const originalText = message.textContent;
+            message.textContent = text;
+            message.style.color = color;
+            
+            setTimeout(() => {
+                if (gameActive) {
+                    message.textContent = 'Tap the green buttons! Avoid red!';
+                    message.style.color = '#666';
+                }
+            }, 300);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            clearInterval(lightInterval);
+
+            const buttons = document.querySelectorAll('.game-button');
+            buttons.forEach(btn => btn.classList.remove('green', 'red'));
+
+            document.getElementById('startBtn').disabled = false;
+
+            // Update best score
+            if (score > bestScore) {
+                bestScore = score;
+                localStorage.setItem('tapGameBest', bestScore);
+                document.getElementById('best').textContent = bestScore;
+                document.getElementById('message').innerHTML = `
+                    🎉 <strong style="color: #667eea;">NEW BEST SCORE: ${score}!</strong> 🎉
+                `;
+            } else {
+                document.getElementById('message').innerHTML = `
+                    Game Over! Final Score: <strong style="color: #667eea;">${score}</strong>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
