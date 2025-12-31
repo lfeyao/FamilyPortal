@@ -1,16 +1,25 @@
 {
   "2025": {
     "dan": [
-      "Example resolution for Dan"
+      "Use the Tonal 3x a week",
+      "Plan a trip to Japan",
+      "Connect with friends more often"
     ],
     "cat": [
-      "Example resolution for Cat"
+      "Exercise 5x a week",
+      "Go to bed by 11pm every night",
+      "Drink green tea 6x a week"
     ],
     "sebastian": [
-      "Example resolution for Sebastian"
+      "Be more responsible and help more around the house",
+      "Read 100 books",
+      "Get a cat or dog",
+      "Finish Suzuki"
     ],
     "elle": [
-      "Example resolution for Elle"
+      "Read 101 books",
+      "Learn Calculus",
+      "Participate in the spelling bee"
     ]
   }
 }
