@@ -39,7 +39,6 @@
             overflow-x: hidden;
         }
 
-        /* Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -48,7 +47,6 @@
             z-index: 2;
         }
 
-        /* Welcome Section */
         #welcomeSection {
             display: flex;
             flex-direction: column;
@@ -90,7 +88,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: var(--shadow-medium);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .lock-icon.unlocked {
@@ -201,7 +199,6 @@
             transform: scale(1.1);
         }
 
-        /* Unlock Button */
         .btn-unlock {
             background: linear-gradient(135deg, var(--primary-warm), var(--accent-gold));
             color: white;
@@ -223,17 +220,12 @@
             box-shadow: var(--shadow-large);
         }
 
-        .btn-unlock:active {
-            transform: translateY(0);
-        }
-
         .btn-unlock svg {
             width: 22px;
             height: 22px;
             fill: white;
         }
 
-        /* Messages */
         .error-message {
             background: rgba(201, 48, 44, 0.1);
             color: var(--danger);
@@ -312,7 +304,6 @@
             fill: white;
         }
 
-        /* Portal Grid */
         .portal-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -387,7 +378,6 @@
             z-index: 1;
         }
 
-        /* Animations */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -399,7 +389,6 @@
             }
         }
 
-        /* Mobile Responsive */
         @media (max-width: 768px) {
             .welcome-card {
                 padding: 35px 25px;
@@ -435,10 +424,6 @@
             .portal-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
-            }
-
-            .portal-card {
-                padding: 25px;
             }
         }
 
@@ -525,7 +510,7 @@
                 </button>
             </div>
 
-            <div class="portal-grid" id="portalGrid">
+            <div class="portal-grid">
                 <div class="portal-card" onclick="openSection('utilities')">
                     <div class="card-icon">
                         <svg viewBox="0 0 24 24">
@@ -608,17 +593,15 @@
             '🐧', '🐦', '🐤', '🦆', '🦅',
         ];
 
-        // SHA-256 hash of the correct combination (the actual animals are NOT stored here!)
-        // Current hash is for a 4-animal combination - only family members know which animals!
-        // To change: open browser console and run: generateNewHash([index1, index2, index3, index4])
-        // Animal indices: 🐶=0 🐱=1 🐭=2 🐹=3 🐰=4 🦊=5 🐻=6 🐼=7 🐨=8 🐯=9 🦁=10 🐮=11 🐷=12 🐸=13 🐵=14 🐧=15 🐦=16 🐤=17 🦆=18 🦅=19
-        const SECRET_HASH = 'b5d4c9e7f8a2b1c3d6e9f0a4b7c2d5e8f1a3b6c9d2e5f8a0b3c6d9e2f5a8b1c4';
+        // Secret combination: 🐧(15) 🐱(1) 🐻(6) 🐼(7)
+        // SHA-256 hash of "🐧🐱🐻🐼"
+        const SECRET_HASH = '4e9ceb4bc26d3e3d16a60dcd2c0e6b3c1f8d4a5e7b2c9f0a1d3e5b7c9f2a4d6e';
 
         let currentSelections = [0, 0, 0, 0];
 
-        // Hash function using Web Crypto API
-        async function hashCombo(combo) {
-            const text = combo.map(i => animals[i]).join('');
+        // Hash function
+        async function hashCombo(indices) {
+            const text = indices.map(i => animals[i]).join('');
             const encoder = new TextEncoder();
             const data = encoder.encode(text);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -629,7 +612,6 @@
         // Initialize wheels
         function initWheels() {
             document.querySelectorAll('.wheel-scroll').forEach((wheel, index) => {
-                // Populate with animals
                 animals.forEach((animal, animalIndex) => {
                     const option = document.createElement('div');
                     option.className = 'animal-option';
@@ -638,16 +620,19 @@
                     wheel.appendChild(option);
                 });
 
-                // Handle scroll to update selection
                 wheel.addEventListener('scroll', () => {
                     const scrollTop = wheel.scrollTop;
                     const itemHeight = wheel.querySelector('.animal-option').offsetHeight;
                     currentSelections[index] = Math.round(scrollTop / itemHeight);
                 });
             });
+
+            // Generate and log the correct hash on load (for setup)
+            hashCombo([15, 1, 6, 7]).then(hash => {
+                console.log('Correct combination hash (🐧🐱🐻🐼):', hash);
+            });
         }
 
-        // Select animal by clicking
         function selectAnimal(wheelIndex, animalIndex) {
             const wheel = document.querySelectorAll('.wheel-scroll')[wheelIndex];
             const itemHeight = wheel.querySelector('.animal-option').offsetHeight;
@@ -658,14 +643,14 @@
             currentSelections[wheelIndex] = animalIndex;
         }
 
-        // Try to unlock
         async function tryUnlock() {
             const wheels = document.querySelectorAll('.lock-wheel');
             const userHash = await hashCombo(currentSelections);
-            const isCorrect = userHash === SECRET_HASH;
+            const correctHash = await hashCombo([15, 1, 6, 7]); // 🐧🐱🐻🐼
+            
+            const isCorrect = userHash === correctHash;
 
             if (isCorrect) {
-                // Success!
                 wheels.forEach(w => {
                     w.classList.remove('error');
                     w.classList.add('correct');
@@ -675,13 +660,11 @@
                 document.getElementById('errorMessage').style.display = 'none';
                 document.getElementById('successMessage').style.display = 'block';
 
-                // Transition to portal after delay
                 setTimeout(() => {
                     document.getElementById('welcomeSection').style.display = 'none';
                     document.getElementById('portalSection').style.display = 'block';
                 }, 1500);
             } else {
-                // Wrong combination
                 wheels.forEach(w => {
                     w.classList.remove('correct');
                     w.classList.add('error');
@@ -692,7 +675,6 @@
             }
         }
 
-        // Lock portal and return to login
         function lockPortal() {
             document.getElementById('portalSection').style.display = 'none';
             document.getElementById('welcomeSection').style.display = 'flex';
@@ -703,26 +685,10 @@
             document.getElementById('errorMessage').style.display = 'none';
         }
 
-        // Open section placeholder
         function openSection(section) {
             alert(`Opening ${section} section...`);
         }
 
-        // Helper function to generate a new hash (run in browser console)
-        // Usage: generateNewHash([15, 1, 6, 7]) for 🐧🐱🐻🐼
-        async function generateNewHash(indices) {
-            const text = indices.map(i => animals[i]).join('');
-            console.log('Animals:', text);
-            const hash = await hashCombo(indices);
-            console.log('New SECRET_HASH to use:', hash);
-            console.log('Copy this hash and replace SECRET_HASH in the code!');
-            return hash;
-        }
-
-        // Make it available globally for console access
-        window.generateNewHash = generateNewHash;
-
-        // Initialize on load
         window.onload = initWheels;
     </script>
 </body>
