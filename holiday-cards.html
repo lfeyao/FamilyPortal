@@ -392,14 +392,17 @@
     </div>
 
     <script>
+        // GitHub LFS media URL base
+        const LFS_BASE = 'https://media.githubusercontent.com/media/daiyu/FamilyPortal/main';
+
         function playVideo(year) {
             const modal = document.getElementById('videoModal');
             const video = document.getElementById('videoPlayer');
             const title = document.getElementById('videoTitle');
             const error = document.getElementById('videoError');
             
-            // Set video source - expects files like Holiday_Card_2016.mp4
-            const videoSrc = `static/Holiday_Card_${year}.mp4`;
+            // Set video source from GitHub LFS
+            const videoSrc = `${LFS_BASE}/static/Holiday_Card_${year}.mp4`;
             
             title.textContent = `Holiday Card ${year}`;
             video.src = videoSrc;
