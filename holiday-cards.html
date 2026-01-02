@@ -506,8 +506,8 @@
                 videoError.style.display = 'block';
             };
             
-            // Set audio source
-            const audioSrc = `${LFS_BASE}/static/Concert_${year}.mp3`;
+            // Set audio source (from local static folder)
+            const audioSrc = `static/Concert_${year}.mp3`;
             audio.src = audioSrc;
             
             // Handle audio error
