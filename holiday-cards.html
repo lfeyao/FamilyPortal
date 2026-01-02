@@ -294,6 +294,21 @@
             font-style: italic;
         }
 
+        .photo-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .family-photo {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 8px;
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .header {
                 padding: 20px;
@@ -470,6 +485,17 @@
                     <p>🎵 No concert recording for this year</p>
                 </div>
             </div>
+            
+            <!-- Photo Section -->
+            <div class="media-section" id="photoSection" style="display: none;">
+                <div class="media-section-title">
+                    <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                    Family Photo
+                </div>
+                <div class="photo-container">
+                    <img id="familyPhoto" class="family-photo" alt="Family Photo">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -486,6 +512,8 @@
             const audioError = document.getElementById('audioError');
             const videoSection = document.getElementById('videoSection');
             const audioSection = document.getElementById('audioSection');
+            const photoSection = document.getElementById('photoSection');
+            const familyPhoto = document.getElementById('familyPhoto');
             
             // Set title
             title.textContent = `${year} - Holiday Card & Concert`;
@@ -495,6 +523,7 @@
             audio.parentElement.style.display = 'block';
             videoError.style.display = 'none';
             audioError.style.display = 'none';
+            photoSection.style.display = 'none';
             
             // Set video source
             const videoSrc = `${LFS_BASE}/static/Holiday_Card_${year}.mp4`;
@@ -515,6 +544,32 @@
                 audio.parentElement.style.display = 'none';
                 audioError.style.display = 'block';
             };
+            
+            // Try to load family photo (check multiple extensions)
+            const extensions = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
+            let photoFound = false;
+            let extensionIndex = 0;
+            
+            function tryNextExtension() {
+                if (extensionIndex >= extensions.length) {
+                    // No photo found, keep section hidden
+                    return;
+                }
+                
+                const photoSrc = `static/Pic_${year}.${extensions[extensionIndex]}`;
+                familyPhoto.src = photoSrc;
+            }
+            
+            familyPhoto.onload = function() {
+                photoSection.style.display = 'block';
+            };
+            
+            familyPhoto.onerror = function() {
+                extensionIndex++;
+                tryNextExtension();
+            };
+            
+            tryNextExtension();
             
             modal.classList.add('active');
         }
