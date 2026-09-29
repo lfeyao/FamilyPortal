@@ -491,7 +491,7 @@
 
                 const next = getSafeNext();
                 if (next) {
-                    setTimeout(() => { location.href = next; }, 900);
+                    setTimeout(() => { location.replace(next); }, 900);
                     return;
                 }
 
@@ -536,7 +536,7 @@
             try { saved = sessionStorage.getItem('fp_auth'); } catch (e) {}
             if (saved) {
                 const next = getSafeNext();
-                if (next) { location.href = next; return; }
+                if (next) { location.replace(next); return; }
                 document.getElementById('passphraseInput').value = saved;
                 tryUnlock();
             }
