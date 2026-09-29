@@ -32,6 +32,30 @@
             const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64ToBytes(vault.iv) }, key, b64ToBytes(vault.ct));
             return new TextDecoder().decode(pt);
         }
+
+        function withMobileFit(html) {
+            if (!/<meta[^>]+name=["']viewport["']/i.test(html)) {
+                html = html.replace(/<head([^>]*)>/i, '<head$1><meta name="viewport" content="width=device-width, initial-scale=1">');
+            }
+            var patch = '<scr' + 'ipt>(function(){'
+                + 'function fit(){try{'
+                + 'var t=document.getElementById("root")||document.body;'
+                + 't.style.zoom="";'
+                + 'var vw=document.documentElement.clientWidth||window.innerWidth;'
+                + 'var sw=Math.max(t.scrollWidth,document.documentElement.scrollWidth);'
+                + 'if(vw&&sw>vw+1){t.style.zoom=(vw/sw);}'
+                + '}catch(e){}}'
+                + 'var tm;function sched(){clearTimeout(tm);tm=setTimeout(fit,150);}'
+                + 'window.addEventListener("resize",sched);'
+                + 'window.addEventListener("orientationchange",sched);'
+                + 'if(document.readyState==="complete"){fit();}else{window.addEventListener("load",fit);}'
+                + 'setTimeout(fit,700);setTimeout(fit,2000);'
+                + '})();</scr' + 'ipt>';
+            if (/<\/body\s*>/i.test(html)) return html.replace(/<\/body\s*>/i, patch + '</body>');
+            if (/<\/html\s*>/i.test(html)) return html.replace(/<\/html\s*>/i, patch + '</html>');
+            return html + patch;
+        }
+
         function pagePath() { return location.pathname.replace(/^\//, ''); }
         function sendToLogin() {
             location.replace(LOGIN + '?next=' + encodeURIComponent(pagePath()));
@@ -41,7 +65,8 @@
             try { saved = sessionStorage.getItem('fp_auth'); } catch (e) {}
             if (!saved) { sendToLogin(); return; }
             try {
-                const html = await unlockVault(saved, VAULT);
+                let html = await unlockVault(saved, VAULT);
+                html = withMobileFit(html);
                 document.open();
                 document.write(html);
                 document.close();
