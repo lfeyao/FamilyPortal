@@ -425,163 +425,68 @@
             </div>
         </div>
 
-        <div id="portalSection">
-            <div class="portal-header">
-                <h2>Yu Family Lagoon</h2>
-                <button class="btn-lock" onclick="lockPortal()">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-                    </svg>
-                    Lock Portal
-                </button>
-            </div>
-
-            <div class="portal-grid">
-                <div class="portal-card" onclick="window.location.href='games/index.html'">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                        </svg>
-                    </div>
-                    <h3 class="card-title">Games</h3>
-                    <p class="card-description">Fun family games, entertainment, and activities for everyone to enjoy.</p>
-                </div>
-
-                <div class="portal-card" onclick="window.location.href='resolutions.html'">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="card-title">New Year Resolutions</h3>
-                    <p class="card-description">Family goals and resolutions for each new year.</p>
-                </div>
-
-                <div class="portal-card" onclick="window.location.href='holiday-cards.html'">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2l-4-5h3V7h2v5h3l-4 5z"/>
-                        </svg>
-                    </div>
-                    <h3 class="card-title">Holiday Cards</h3>
-                    <p class="card-description">Annual family holiday card videos from 2016 to present.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
+        <div id="portalSection" style="display:none"></div>
     <script>
-        // SHA-256 hash - the actual passphrase is never stored
-        const CORRECT_HASH = '0d424aebdcaa3bcabd4f028807fac33ec0ab7cd4596875ef5d7e7d16090d7631';
+        // AES-256-GCM vault: the portal content below is encrypted.
+        // The passphrase is never stored - only this ciphertext. A wrong
+        // passphrase fails decryption, so there is nothing to crack offline
+        // except a full brute-force of the passphrase itself.
+        const VAULT = {"v":1,"iter":600000,"salt":"5kfzp8JfMyidDLe4jQJYdA==","iv":"w0FDgzjJuCaCa8/H","ct":"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"};
 
-        // Pure JavaScript SHA-256 implementation (works without HTTPS)
-        function sha256(str) {
-            function rightRotate(value, amount) {
-                return (value >>> amount) | (value << (32 - amount));
-            }
-            
-            const mathPow = Math.pow;
-            const maxWord = mathPow(2, 32);
-            let result = '';
-            const words = [];
-            const asciiBitLength = str.length * 8;
-            
-            let hash = [];
-            const k = [];
-            let primeCounter = 0;
-            
-            const isComposite = {};
-            for (let candidate = 2; primeCounter < 64; candidate++) {
-                if (!isComposite[candidate]) {
-                    for (let i = 0; i < 313; i += candidate) {
-                        isComposite[i] = candidate;
-                    }
-                    hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
-                    k[primeCounter++] = (mathPow(candidate, 1/3) * maxWord) | 0;
-                }
-            }
-            
-            str += '\x80';
-            while (str.length % 64 - 56) str += '\x00';
-            for (let i = 0; i < str.length; i++) {
-                const j = str.charCodeAt(i);
-                if (j >> 8) return;
-                words[i >> 2] |= j << ((3 - i) % 4) * 8;
-            }
-            words[words.length] = ((asciiBitLength / maxWord) | 0);
-            words[words.length] = (asciiBitLength);
-            
-            for (let j = 0; j < words.length;) {
-                const w = words.slice(j, j += 16);
-                const oldHash = hash;
-                hash = hash.slice(0, 8);
-                
-                for (let i = 0; i < 64; i++) {
-                    const w15 = w[i - 15], w2 = w[i - 2];
-                    const a = hash[0], e = hash[4];
-                    const temp1 = hash[7]
-                        + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
-                        + ((e & hash[5]) ^ ((~e) & hash[6]))
-                        + k[i]
-                        + (w[i] = (i < 16) ? w[i] : (
-                            w[i - 16]
-                            + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
-                            + w[i - 7]
-                            + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
-                        ) | 0);
-                    const temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
-                        + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
-                    
-                    hash = [(temp1 + temp2) | 0].concat(hash);
-                    hash[4] = (hash[4] + temp1) | 0;
-                }
-                
-                for (let i = 0; i < 8; i++) {
-                    hash[i] = (hash[i] + oldHash[i]) | 0;
-                }
-            }
-            
-            for (let i = 0; i < 8; i++) {
-                for (let j = 3; j + 1; j--) {
-                    const b = (hash[i] >> (j * 8)) & 255;
-                    result += ((b < 16) ? '0' : '') + b.toString(16);
-                }
-            }
-            return result;
+        function b64ToBytes(b64) {
+            const bin = atob(b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return bytes;
         }
-
+        async function unlockVault(passphrase, vault) {
+            const enc = new TextEncoder();
+            const baseKey = await crypto.subtle.importKey('raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveKey']);
+            const key = await crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt: b64ToBytes(vault.salt), iterations: vault.iter, hash: 'SHA-256' },
+                baseKey, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+            const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64ToBytes(vault.iv) }, key, b64ToBytes(vault.ct));
+            return new TextDecoder().decode(pt);
+        }
         // Initialize
         function init() {
             document.getElementById('passphraseInput').focus();
         }
 
-        function tryUnlock() {
+        async function tryUnlock() {
             const input = document.getElementById('passphraseInput');
             const passphrase = input.value;
-            
+            const btn = document.querySelector('.btn-unlock');
+
             if (!passphrase) {
                 input.classList.add('error');
                 setTimeout(() => input.classList.remove('error'), 500);
                 return;
             }
 
-            const userHash = sha256(passphrase);
-            
-            if (userHash === CORRECT_HASH) {
-                // Success
+            btn.disabled = true;
+            const originalBtn = btn.innerHTML;
+            btn.innerHTML = 'Unlocking...';
+            document.getElementById('errorMessage').style.display = 'none';
+
+            try {
+                const html = await unlockVault(passphrase, VAULT);
                 input.classList.remove('error');
                 input.classList.add('success');
                 document.getElementById('lockIcon').classList.add('unlocked');
                 document.getElementById('lockSvg').innerHTML = '<path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/>';
-                document.getElementById('errorMessage').style.display = 'none';
                 document.getElementById('successMessage').style.display = 'block';
+                input.value = '';
 
                 setTimeout(() => {
                     document.getElementById('welcomeSection').style.display = 'none';
-                    document.getElementById('portalSection').style.display = 'block';
+                    const portal = document.getElementById('portalSection');
+                    portal.innerHTML = html;
+                    portal.style.display = 'block';
                 }, 1000);
-            } else {
-                // Wrong passphrase
+            } catch (e) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtn;
                 input.classList.add('error');
                 setTimeout(() => input.classList.remove('error'), 500);
                 document.getElementById('errorMessage').style.display = 'block';
@@ -590,6 +495,7 @@
         }
 
         function lockPortal() {
+            document.getElementById('portalSection').innerHTML = '';
             document.getElementById('portalSection').style.display = 'none';
             document.getElementById('welcomeSection').style.display = 'flex';
             document.getElementById('lockIcon').classList.remove('unlocked');
