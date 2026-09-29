@@ -453,6 +453,16 @@
             document.getElementById('passphraseInput').focus();
         }
 
+        // Where to go after login when a protected page bounced here with ?next=.
+        // Only same-site relative .html paths are honored (no open redirects).
+        function getSafeNext() {
+            try {
+                const n = new URLSearchParams(location.search).get('next');
+                if (n && /^[A-Za-z0-9_\-\.][A-Za-z0-9_\-\/.]*\.html$/.test(n) && n.indexOf('..') === -1 && n.charAt(0) !== '/') return n;
+            } catch (e) {}
+            return null;
+        }
+
         async function tryUnlock() {
             const input = document.getElementById('passphraseInput');
             const passphrase = input.value;
@@ -478,6 +488,12 @@
                 document.getElementById('successMessage').style.display = 'block';
                 try { sessionStorage.setItem('fp_auth', passphrase); } catch (e) {}
                 input.value = '';
+
+                const next = getSafeNext();
+                if (next) {
+                    setTimeout(() => { location.href = next; }, 900);
+                    return;
+                }
 
                 setTimeout(() => {
                     document.getElementById('welcomeSection').style.display = 'none';
@@ -519,6 +535,8 @@
             let saved = null;
             try { saved = sessionStorage.getItem('fp_auth'); } catch (e) {}
             if (saved) {
+                const next = getSafeNext();
+                if (next) { location.href = next; return; }
                 document.getElementById('passphraseInput').value = saved;
                 tryUnlock();
             }
