@@ -542,5 +542,27 @@
             }
         })();
     </script>
+    <script>
+        // Mobile auto-fit: shrink the page only when its content is wider than
+        // the viewport (narrow phones). Desktop rendering is untouched.
+        (function () {
+            function fit() {
+                try {
+                    var t = document.getElementById('root') || document.body;
+                    t.style.zoom = '';
+                    var vw = document.documentElement.clientWidth || window.innerWidth;
+                    var sw = Math.max(t.scrollWidth, document.documentElement.scrollWidth);
+                    if (vw && sw > vw + 1) { t.style.zoom = (vw / sw); }
+                } catch (e) {}
+            }
+            var tm;
+            function sched() { clearTimeout(tm); tm = setTimeout(fit, 150); }
+            window.addEventListener('resize', sched);
+            window.addEventListener('orientationchange', sched);
+            if (document.readyState === 'complete') { fit(); } else { window.addEventListener('load', fit); }
+            setTimeout(fit, 700);
+            setTimeout(fit, 2000);
+        })();
+    </script>
 </body>
 </html>
