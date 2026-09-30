@@ -70,6 +70,8 @@
     transition: opacity 1s ease; white-space:nowrap;
   }
   .hint.gone { opacity:0; }
+  #lofiToast { bottom:84px; }
+  #micEgg:focus { outline:none; }
 
   /* ---------- rotate prompt (portrait phones) ---------- */
   .rotate-prompt {
@@ -129,14 +131,14 @@
 <!-- ======== hotspots ======== -->
 <g id="hotspots">
   <g class="hotspot" id="hsGames" tabindex="0" role="button" aria-label="Open games">
-    <circle class="ring" cx="2009" cy="811" r="55" style="animation-delay:0s"/>
-    <circle class="dot" cx="2009" cy="811" r="17"/>
-    <text x="2009" y="749" text-anchor="middle">games</text>
+    <circle class="ring" cx="2009" cy="856" r="55" style="animation-delay:0s"/>
+    <circle class="dot" cx="2009" cy="856" r="17"/>
+    <text x="2009" y="794" text-anchor="middle">games</text>
   </g>
   <g class="hotspot" id="hsDesk" tabindex="0" role="button" aria-label="Open resolutions">
-    <circle class="ring" cx="1770" cy="810" r="55" style="animation-delay:1.5s"/>
-    <circle class="dot" cx="1770" cy="810" r="17"/>
-    <text x="1770" y="748" text-anchor="middle">resolutions</text>
+    <circle class="ring" cx="2462" cy="1382" r="55" style="animation-delay:1.5s"/>
+    <circle class="dot" cx="2462" cy="1382" r="17"/>
+    <text x="2462" y="1320" text-anchor="middle">os</text>
   </g>
   <g class="hotspot" id="hsTravel" tabindex="0" role="button" aria-label="Open travel notes">
     <circle class="ring" cx="2138" cy="255" r="55" style="animation-delay:3s"/>
@@ -147,6 +149,11 @@
     <circle class="ring" cx="2420" cy="946" r="55" style="animation-delay:4.5s"/>
     <circle class="dot" cx="2420" cy="946" r="17"/>
     <text x="2420" y="884" text-anchor="middle">memories</text>
+  </g>
+  <g class="hotspot" id="hsTwins" tabindex="0" role="button" aria-label="Open Sebastian and Elle's site">
+    <circle class="ring" cx="436" cy="1390" r="55" style="animation-delay:5.25s"/>
+    <circle class="dot" cx="436" cy="1390" r="17"/>
+    <text x="436" y="1328" text-anchor="middle">S&amp;E</text>
   </g>
 </g>
 
@@ -160,10 +167,17 @@
   <circle class="mote" cx="760" cy="1050" r="6" style="animation-delay:9s"/>
   <circle class="mote" cx="1250" cy="1250" r="5" style="animation-delay:1.5s"/>
 </g>
+
+<!-- easter egg: invisible mic hit area (no dot) -->
+<g id="micEgg" tabindex="0" role="button" aria-label="Toggle lofi beats">
+  <ellipse cx="2738" cy="1316" rx="76" ry="195" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
 <rect x="0" y="0" width="2814" height="1536" fill="url(#vignette)" pointer-events="none"/>
 </svg>
 
 <div class="hint" id="hint">tap the markers to explore</div>
+<div class="hint" id="lofiToast" style="display:none"></div>
+<audio id="lofiAudio" preload="none"></audio>
 
 <div class="rotate-prompt" id="rotatePrompt" role="dialog" aria-label="Rotate your phone">
   <div class="rotate-inner">
@@ -210,6 +224,42 @@
   bindTap(document.getElementById('hsGames'), function(){ hideHint(); go('games/index.html'); });
   bindTap(document.getElementById('hsMemories'), function(){ hideHint(); go('holiday-cards.html'); });
   bindTap(document.getElementById('hsTravel'), function(){ hideHint(); window.open('https://travelnotes-423.pages.dev', '_blank', 'noopener'); });
+  bindTap(document.getElementById('hsTwins'), function(){ hideHint(); window.open('https://yutwin.github.io', '_blank', 'noopener'); });
+
+  // ---- mic easter egg: streaming lofi beats (tap mic to toggle) ----
+  var lofiAudio = document.getElementById('lofiAudio');
+  var lofiToast = document.getElementById('lofiToast');
+  var lofiSources = [
+    'https://stream.zeno.fm/f3wvbbqmdg8uv',        // listed as Lofi Girl 24/7 lo-fi feed
+    'https://ice1.somafm.com/groovesalad-128-mp3' // SomaFM ambient beats fallback
+  ];
+  var lofiIdx = 0, lofiOn = false;
+  function lofiToastMsg(m){
+    if(m){ lofiToast.textContent = m; lofiToast.style.display = 'block'; }
+    else { lofiToast.style.display = 'none'; }
+  }
+  function lofiTryPlay(){
+    lofiAudio.src = lofiSources[lofiIdx];
+    var pr = lofiAudio.play();
+    if(pr && pr.catch){ pr.catch(function(){ lofiNextSource(); }); }
+  }
+  function lofiNextSource(){
+    lofiIdx++;
+    if(lofiIdx >= lofiSources.length){
+      lofiIdx = 0; lofiOn = false;
+      lofiToastMsg('stream unavailable');
+      setTimeout(function(){ if(!lofiOn) lofiToastMsg(''); }, 2500);
+      return;
+    }
+    lofiTryPlay();
+  }
+  lofiAudio.addEventListener('error', function(){ if(lofiOn) lofiNextSource(); });
+  function toggleLofi(){
+    hideHint();
+    if(lofiOn){ lofiOn = false; lofiAudio.pause(); lofiToastMsg(''); }
+    else { lofiOn = true; lofiToastMsg('\u266A lofi beats'); lofiTryPlay(); }
+  }
+  bindTap(document.getElementById('micEgg'), toggleLofi);
 
   // ---- rotate prompt: portrait touch devices ----
   var rotatePrompt = document.getElementById('rotatePrompt');
@@ -229,15 +279,6 @@
   window.addEventListener('resize', checkOrientation);
   checkOrientation();
 
-  // ---- subtle artwork parallax on desktop ----
-  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!reduced && window.matchMedia('(pointer:fine)').matches){
-    document.querySelector('.stage').addEventListener('mousemove', function(e){
-      var dx = (e.clientX / window.innerWidth - .5) * 14;
-      var dy = (e.clientY / window.innerHeight - .5) * 10;
-      art.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-    });
-  }
 })();
 </script>
 </body>
