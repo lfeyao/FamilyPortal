@@ -464,10 +464,10 @@
     <circle class="dot" cx="516" cy="500" r="11"/>
     <text x="516" y="452" text-anchor="middle">tunes</text>
   </g>
-  <g class="hotspot" id="hsJournal" tabindex="0" role="button" aria-label="Open family journal">
+  <g class="hotspot" id="hsDesk" tabindex="0" role="button" aria-label="Open New Year resolutions">
     <circle class="ring" cx="1260" cy="420" r="34"/>
     <circle class="dot" cx="1260" cy="420" r="11"/>
-    <text x="1260" y="372" text-anchor="middle">journal</text>
+    <text x="1260" y="372" text-anchor="middle">resolutions</text>
   </g>
   <g class="hotspot" id="hsPortal" tabindex="0" role="button" aria-label="Open family portal">
     <circle class="ring" cx="300" cy="640" r="34"/>
@@ -561,7 +561,7 @@
   audio.addEventListener('ended', function(){ setPlaying(false); });
 
   // ---- navigation ----
-  bindTap(document.getElementById('hsJournal'), function(){ hideHint(); go('journal.html'); });
+  bindTap(document.getElementById('hsDesk'), function(){ hideHint(); go('resolutions.html'); });
   bindTap(document.getElementById('hsPortal'), function(){ hideHint(); go('portal.html'); });
   bindTap(document.getElementById('hsGames'), function(){ hideHint(); go('games/index.html'); });
   bindTap(document.getElementById('hsMemories'), function(){ hideHint(); go('holiday-cards.html'); });
