@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Yu Family Lagoon — welcome home</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,8 @@
     background:#241a12; overflow:hidden;
     font-family:'Crimson Text', Georgia, serif;
     -webkit-tap-highlight-color: transparent;
+    position:fixed; inset:0; width:100%;
+    overscroll-behavior:none; touch-action:manipulation;
   }
   .stage { position:fixed; inset:0; }
   svg.room { width:100%; height:100%; display:block; }
@@ -71,6 +73,39 @@
     font-family:'Caveat', cursive; font-size:20px; pointer-events:none;
     text-shadow:0 1px 8px rgba(40,20,5,.7);
   }
+
+  /* ---------- rotate prompt (portrait phones) ---------- */
+  .rotate-prompt {
+    position:fixed; inset:0; z-index:50;
+    display:none; align-items:center; justify-content:center;
+    background:rgba(26,17,10,.93);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    text-align:center; padding:32px;
+  }
+  .rotate-prompt.show { display:flex; }
+  .rotate-inner { max-width:420px; }
+  .rotate-phone {
+    width:76px; height:76px; margin:0 auto 20px; display:block;
+    animation: rotateHint 2.4s ease-in-out infinite;
+  }
+  @keyframes rotateHint {
+    0%, 25% { transform: rotate(0deg); }
+    65%, 100% { transform: rotate(90deg); }
+  }
+  .rotate-prompt h2 {
+    font-family:'Caveat', cursive; font-size:42px; font-weight:700; color:#ffe9c9;
+  }
+  .rotate-prompt p {
+    font-family:'Caveat', cursive; font-size:24px; font-weight:500;
+    color:rgba(255,233,201,.72); margin-top:8px;
+  }
+  .rotate-dismiss {
+    margin-top:26px; background:none; cursor:pointer;
+    border:1px solid rgba(255,217,122,.5); border-radius:999px;
+    color:#ffd97a; font-family:'Caveat', cursive; font-size:22px; font-weight:600;
+    padding:8px 28px;
+  }
+  .rotate-dismiss:active { transform:scale(.96); }
 
   /* ---------- music widget ---------- */
   .music-widget {
@@ -184,6 +219,20 @@
 <div class="hint" id="hint">tap the glowing dots to explore</div>
 <div class="credit">a quiet corner of the internet</div>
 
+<div class="rotate-prompt" id="rotatePrompt" role="dialog" aria-label="Rotate your phone">
+  <div class="rotate-inner">
+    <svg class="rotate-phone" viewBox="0 0 76 76" fill="none" aria-hidden="true">
+      <rect x="24" y="8" width="28" height="54" rx="6" stroke="#ffd97a" stroke-width="4"/>
+      <circle cx="38" cy="54" r="2.6" fill="#ffd97a"/>
+      <path d="M62 22 A 27 27 0 0 1 62 54" stroke="#ffd97a" stroke-width="4" stroke-linecap="round"/>
+      <path d="M57 48 L63 55 L55 57" stroke="#ffd97a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h2>rotate your phone</h2>
+    <p>this room is best viewed in landscape</p>
+    <button class="rotate-dismiss" id="rotateDismiss">continue in portrait</button>
+  </div>
+</div>
+
 <div class="music-widget" id="musicWidget" role="dialog" aria-label="Music player">
   <button class="wclose" id="wClose" aria-label="Close player">&times;</button>
   <div class="vinyl-mini"></div>
@@ -249,6 +298,24 @@
   bindTap(document.getElementById('hsPortal'), function(){ hideHint(); go('portal.html'); });
   bindTap(document.getElementById('hsPlay'), function(){ hideHint(); go('games/index.html'); });
   bindTap(document.getElementById('hsMemories'), function(){ hideHint(); go('holiday-cards.html'); });
+
+  // ---- rotate prompt: portrait touch devices ----
+  var rotatePrompt = document.getElementById('rotatePrompt');
+  function checkOrientation(){
+    if(!window.matchMedia) return;
+    var isCoarse = window.matchMedia('(pointer: coarse)').matches;
+    var isPortrait = window.matchMedia('(orientation: portrait)').matches;
+    var dismissed = false;
+    try { dismissed = sessionStorage.getItem('rotateDismissed') === '1'; } catch(e){}
+    rotatePrompt.classList.toggle('show', isCoarse && isPortrait && !dismissed);
+  }
+  document.getElementById('rotateDismiss').addEventListener('click', function(){
+    try { sessionStorage.setItem('rotateDismissed', '1'); } catch(e){}
+    rotatePrompt.classList.remove('show');
+  });
+  window.addEventListener('orientationchange', checkOrientation);
+  window.addEventListener('resize', checkOrientation);
+  checkOrientation();
 
   // ---- subtle artwork parallax on desktop ----
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
