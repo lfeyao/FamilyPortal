@@ -32,17 +32,26 @@
   /* ---------- hotspots ---------- */
   .hotspot { cursor:pointer; outline:none; }
   .hotspot .dot {
-    fill:#ffd97a; stroke:#fff8ea; stroke-width:5;
-    filter: drop-shadow(0 0 14px rgba(255,217,122,.95));
-    animation: dotPulse 2.4s ease-in-out infinite;
+    fill:#ffdf9e; opacity:.45;
+    transition:opacity .25s ease;
   }
-  @keyframes dotPulse { 0%,100% { r:17; opacity:.95; } 50% { r:22; opacity:.65; } }
+  .hotspot:hover .dot, .hotspot:active .dot, .hotspot:focus .dot { opacity:1; }
   .hotspot .ring {
-    fill:none; stroke:#ffd97a; stroke-width:3; opacity:.75;
+    fill:none; stroke:#ffdf9e; stroke-width:2; opacity:0;
     transform-box: fill-box; transform-origin:center;
-    animation: ringOut 2.4s ease-out infinite;
+    animation: ringSoft 6s ease-out infinite;
   }
-  @keyframes ringOut { 0% { transform: scale(.55); opacity:.85; } 100% { transform: scale(1.5); opacity:0; } }
+  @keyframes ringSoft {
+    0% { transform: scale(.35); opacity:0; }
+    12% { opacity:.3; }
+    45% { transform: scale(1.1); opacity:0; }
+    100% { transform: scale(1.1); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hotspot .ring, .rotate-phone, .mote { animation:none; }
+    .hotspot .ring { opacity:0; }
+    .hotspot .dot { opacity:.7; }
+  }
   .hotspot text {
     font-family:'Caveat', cursive; font-size:56px; font-weight:700;
     fill:#fff8ea; opacity:.92; pointer-events:none;
@@ -52,13 +61,6 @@
   .hotspot:hover .dot { fill:#ffe9b8; }
 
   /* ---------- overlay UI ---------- */
-  .title {
-    position:absolute; top:26px; left:32px; color:#fff8ea;
-    font-family:'Caveat', cursive; pointer-events:none;
-    text-shadow:0 2px 16px rgba(40,20,5,.75), 0 1px 3px rgba(40,20,5,.8);
-  }
-  .title h1 { font-size:46px; font-weight:700; line-height:1; }
-  .title p { font-size:24px; opacity:.9; font-weight:500; }
   .hint {
     position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
     background:rgba(42,26,14,.62); color:#ffe9c9;
@@ -68,11 +70,6 @@
     transition: opacity 1s ease; white-space:nowrap;
   }
   .hint.gone { opacity:0; }
-  .credit {
-    position:absolute; bottom:26px; right:28px; color:rgba(255,248,234,.75);
-    font-family:'Caveat', cursive; font-size:20px; pointer-events:none;
-    text-shadow:0 1px 8px rgba(40,20,5,.7);
-  }
 
   /* ---------- rotate prompt (portrait phones) ---------- */
   .rotate-prompt {
@@ -107,50 +104,9 @@
   }
   .rotate-dismiss:active { transform:scale(.96); }
 
-  /* ---------- music widget ---------- */
-  .music-widget {
-    position:absolute; right:24px; bottom:70px; width:308px;
-    background:linear-gradient(150deg, #4a2f1c, #2a1a10);
-    border:1px solid rgba(255,217,122,.32); border-radius:18px;
-    padding:16px; display:flex; gap:14px; align-items:center;
-    box-shadow:0 18px 50px rgba(0,0,0,.5);
-    transform: translateY(24px); opacity:0; pointer-events:none;
-    transition: transform .45s cubic-bezier(.2,.9,.3,1.2), opacity .3s ease;
-    z-index:5;
-  }
-  .music-widget.open { transform:none; opacity:1; pointer-events:auto; }
-  .vinyl-mini {
-    width:74px; height:74px; border-radius:50%; flex:none; position:relative;
-    background: radial-gradient(circle at center, #e8975a 0 16%, #17171c 17% 100%);
-    box-shadow:0 4px 14px rgba(0,0,0,.5);
-  }
-  .vinyl-mini::after {
-    content:''; position:absolute; inset:10px; border-radius:50%;
-    border:1px solid rgba(255,255,255,.14);
-    box-shadow: inset 0 0 0 6px rgba(255,255,255,.05), inset 0 0 0 12px rgba(255,255,255,.04);
-  }
-  body.playing .vinyl-mini { animation: spin 2.6s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .track-info { flex:1; min-width:0; color:#ffe9c9; }
-  .track-title { font-family:'Caveat', cursive; font-size:25px; font-weight:700; line-height:1.05; }
-  .track-sub { font-size:14px; opacity:.65; font-style:italic; }
-  .wbtn {
-    width:44px; height:44px; border-radius:50%; border:none; flex:none; cursor:pointer;
-    background:#e8975a; color:#2a1708; font-size:18px;
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 4px 12px rgba(0,0,0,.35);
-  }
-  .wbtn:active { transform:scale(.93); }
-  .wclose {
-    position:absolute; top:6px; right:10px; background:none; border:none; cursor:pointer;
-    color:rgba(255,233,201,.6); font-size:16px; padding:4px;
-  }
   @media (max-width:640px) {
-    .title h1 { font-size:34px; } .title p { font-size:19px; }
     .hint { font-size:20px; bottom:20px; }
-    .music-widget { right:12px; left:12px; width:auto; bottom:62px; }
     .hotspot text { font-size:62px; }
-    .credit { display:none; }
   }
 </style>
 </head>
@@ -172,30 +128,25 @@
 
 <!-- ======== hotspots ======== -->
 <g id="hotspots">
-  <g class="hotspot" id="hsMusic" tabindex="0" role="button" aria-label="Play family concert recording">
-    <circle class="ring" cx="2460" cy="915" r="55"/>
-    <circle class="dot" cx="2460" cy="915" r="17"/>
-    <text x="2460" y="827" text-anchor="middle">tunes</text>
+  <g class="hotspot" id="hsGames" tabindex="0" role="button" aria-label="Open games">
+    <circle class="ring" cx="2009" cy="811" r="55" style="animation-delay:0s"/>
+    <circle class="dot" cx="2009" cy="811" r="17"/>
+    <text x="2009" y="723" text-anchor="middle">games</text>
   </g>
   <g class="hotspot" id="hsDesk" tabindex="0" role="button" aria-label="Open resolutions">
-    <circle class="ring" cx="1770" cy="810" r="55"/>
+    <circle class="ring" cx="1770" cy="810" r="55" style="animation-delay:1.5s"/>
     <circle class="dot" cx="1770" cy="810" r="17"/>
     <text x="1770" y="722" text-anchor="middle">resolutions</text>
   </g>
-  <g class="hotspot" id="hsPlay" tabindex="0" role="button" aria-label="Open games">
-    <circle class="ring" cx="300" cy="1140" r="55"/>
-    <circle class="dot" cx="300" cy="1140" r="17"/>
-    <text x="300" y="1052" text-anchor="middle">play</text>
+  <g class="hotspot" id="hsTravel" tabindex="0" role="button" aria-label="Open travel notes">
+    <circle class="ring" cx="2138" cy="222" r="55" style="animation-delay:3s"/>
+    <circle class="dot" cx="2138" cy="222" r="17"/>
+    <text x="2138" y="134" text-anchor="middle">travel</text>
   </g>
   <g class="hotspot" id="hsMemories" tabindex="0" role="button" aria-label="Open holiday cards">
-    <circle class="ring" cx="2020" cy="415" r="55"/>
-    <circle class="dot" cx="2020" cy="415" r="17"/>
-    <text x="2020" y="327" text-anchor="middle">memories</text>
-  </g>
-  <g class="hotspot" id="hsPortal" tabindex="0" role="button" aria-label="Open family portal">
-    <circle class="ring" cx="560" cy="480" r="55"/>
-    <circle class="dot" cx="560" cy="480" r="17"/>
-    <text x="560" y="392" text-anchor="middle">portal</text>
+    <circle class="ring" cx="2420" cy="946" r="55" style="animation-delay:4.5s"/>
+    <circle class="dot" cx="2420" cy="946" r="17"/>
+    <text x="2420" y="858" text-anchor="middle">memories</text>
   </g>
 </g>
 
@@ -212,12 +163,7 @@
 <rect x="0" y="0" width="2814" height="1536" fill="url(#vignette)" pointer-events="none"/>
 </svg>
 
-<div class="title">
-  <h1>yu family lagoon</h1>
-  <p>welcome home — tap around the room</p>
-</div>
-<div class="hint" id="hint">tap the glowing dots to explore</div>
-<div class="credit">a quiet corner of the internet</div>
+<div class="hint" id="hint">tap the markers to explore</div>
 
 <div class="rotate-prompt" id="rotatePrompt" role="dialog" aria-label="Rotate your phone">
   <div class="rotate-inner">
@@ -233,18 +179,7 @@
   </div>
 </div>
 
-<div class="music-widget" id="musicWidget" role="dialog" aria-label="Music player">
-  <button class="wclose" id="wClose" aria-label="Close player">&times;</button>
-  <div class="vinyl-mini"></div>
-  <div class="track-info">
-    <div class="track-title">family concert 2025</div>
-    <div class="track-sub">live from the lagoon</div>
-  </div>
-  <button class="wbtn" id="playBtn" aria-label="Play">&#9654;</button>
 </div>
-</div>
-
-<audio id="audio" preload="none" src="https://raw.githubusercontent.com/lfeyao/FamilyPortal/main/static/Concert_2025.mp3"></audio>
 
 <script>
 (function(){
@@ -263,41 +198,18 @@
     art.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', 'static/lofi-room-sm.jpg');
   }
 
-  // ---- music widget ----
-  var widget = document.getElementById('musicWidget');
-  var audio = document.getElementById('audio');
-  var playBtn = document.getElementById('playBtn');
-  function setPlaying(p){
-    if(p){ body.classList.add('playing'); playBtn.innerHTML = '&#10074;&#10074;'; playBtn.setAttribute('aria-label','Pause'); }
-    else { body.classList.remove('playing'); playBtn.innerHTML = '&#9654;'; playBtn.setAttribute('aria-label','Play'); }
-  }
-  function toggleMusic(){
-    widget.classList.add('open');
-    hideHint();
-    if(audio.paused){ audio.play().then(function(){ setPlaying(true); }).catch(function(){ setPlaying(false); }); }
-    else { audio.pause(); setPlaying(false); }
-  }
   function bindTap(el, fn){
     el.addEventListener('click', fn);
     el.addEventListener('keydown', function(e){
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fn(e); }
     });
   }
-  bindTap(document.getElementById('hsMusic'), toggleMusic);
-  playBtn.addEventListener('click', function(){
-    if(audio.paused){ audio.play().then(function(){ setPlaying(true); }).catch(function(){}); }
-    else { audio.pause(); setPlaying(false); }
-  });
-  document.getElementById('wClose').addEventListener('click', function(){
-    audio.pause(); setPlaying(false); widget.classList.remove('open');
-  });
-  audio.addEventListener('ended', function(){ setPlaying(false); });
 
   // ---- navigation (existing pages only) ----
   bindTap(document.getElementById('hsDesk'), function(){ hideHint(); go('resolutions.html'); });
-  bindTap(document.getElementById('hsPortal'), function(){ hideHint(); go('portal.html'); });
-  bindTap(document.getElementById('hsPlay'), function(){ hideHint(); go('games/index.html'); });
+  bindTap(document.getElementById('hsGames'), function(){ hideHint(); go('games/index.html'); });
   bindTap(document.getElementById('hsMemories'), function(){ hideHint(); go('holiday-cards.html'); });
+  bindTap(document.getElementById('hsTravel'), function(){ hideHint(); window.open('https://travelnotes-423.pages.dev', '_blank', 'noopener'); });
 
   // ---- rotate prompt: portrait touch devices ----
   var rotatePrompt = document.getElementById('rotatePrompt');
