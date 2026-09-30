@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>family journal — yu family lagoon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    min-height:100vh;
+    background: linear-gradient(160deg, #2b2140 0%, #4a2f52 55%, #7a4a52 100%);
+    background-attachment: fixed;
+    color:#f7e9d2;
+    font-family:'Crimson Text', Georgia, serif;
+    padding: 28px 18px 60px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wrap { max-width:720px; margin:0 auto; }
+  header { text-align:center; margin-bottom:26px; }
+  header h1 { font-family:'Caveat', cursive; font-size:46px; font-weight:700; text-shadow:0 2px 12px rgba(0,0,0,.4); }
+  header p { font-style:italic; opacity:.75; font-size:17px; }
+  .back {
+    display:inline-block; margin-bottom:18px; color:#ffd97a; text-decoration:none;
+    font-family:'Caveat', cursive; font-size:22px; font-weight:600;
+  }
+  .back:hover { text-decoration:underline; }
+  .new-entry {
+    background:rgba(255,248,236,.07); border:1px solid rgba(255,217,122,.25);
+    border-radius:18px; padding:18px; margin-bottom:28px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+  }
+  .new-entry h2 { font-family:'Caveat', cursive; font-size:28px; margin-bottom:10px; color:#ffd97a; }
+  .new-entry input[type=text] {
+    width:100%; background:rgba(20,12,24,.4); border:1px solid rgba(255,217,122,.2);
+    border-radius:10px; color:#f7e9d2; font-family:'Caveat', cursive; font-size:24px;
+    padding:10px 14px; margin-bottom:10px; outline:none;
+  }
+  .new-entry textarea {
+    width:100%; min-height:130px; background:rgba(20,12,24,.4); border:1px solid rgba(255,217,122,.2);
+    border-radius:10px; color:#f7e9d2; font-family:'Crimson Text', serif; font-size:18px;
+    padding:12px 14px; outline:none; resize:vertical; line-height:1.55;
+  }
+  .new-entry input:focus, .new-entry textarea:focus { border-color:rgba(255,217,122,.55); }
+  .row { display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+  .mood { display:flex; gap:6px; }
+  .mood button {
+    background:none; border:1px solid transparent; font-size:24px; cursor:pointer;
+    border-radius:10px; padding:4px 8px; filter:grayscale(.6); opacity:.55;
+  }
+  .mood button.sel { border-color:rgba(255,217,122,.6); filter:none; opacity:1; background:rgba(255,217,122,.1); }
+  .btn {
+    background:#e8975a; color:#2a1708; border:none; border-radius:999px; cursor:pointer;
+    font-family:'Caveat', cursive; font-size:22px; font-weight:700; padding:8px 26px;
+    box-shadow:0 4px 14px rgba(0,0,0,.3); margin-left:auto;
+  }
+  .btn:active { transform:scale(.96); }
+  #entries { display:flex; flex-direction:column; gap:18px; }
+  .entry {
+    background:linear-gradient(175deg, #fff8ec, #f5e8d2);
+    color:#3a2a1c; border-radius:14px; padding:20px 22px;
+    box-shadow:0 10px 26px rgba(0,0,0,.3);
+    transform: rotate(-.4deg);
+  }
+  .entry:nth-child(even) { transform: rotate(.5deg); }
+  .entry-head { display:flex; align-items:baseline; gap:10px; margin-bottom:8px; }
+  .entry-head h3 { font-family:'Caveat', cursive; font-size:28px; font-weight:700; }
+  .entry-head .date { margin-left:auto; font-style:italic; opacity:.6; font-size:15px; white-space:nowrap; }
+  .entry-head .m { font-size:22px; }
+  .entry-body { font-size:18px; line-height:1.6; white-space:pre-wrap; }
+  .entry-actions { margin-top:12px; display:flex; gap:8px; }
+  .entry-actions button {
+    background:none; border:1px solid rgba(58,42,28,.25); border-radius:999px; cursor:pointer;
+    color:#6b4a2e; font-family:'Caveat', cursive; font-size:18px; padding:4px 16px;
+  }
+  .entry-actions button:hover { background:rgba(58,42,28,.08); }
+  .empty {
+    text-align:center; opacity:.65; font-style:italic; font-size:19px; padding:40px 10px;
+  }
+  .note {
+    text-align:center; margin-top:30px; font-size:14px; opacity:.5; font-style:italic;
+  }
+  @media (max-width:560px) {
+    header h1 { font-size:36px; }
+    .btn { margin-left:0; width:100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; back to the room</a>
+  <header>
+    <h1>the family journal</h1>
+    <p>little notes from the lagoon — kept in this browser, just for us</p>
+  </header>
+
+  <section class="new-entry">
+    <h2>new entry</h2>
+    <input type="text" id="jTitle" placeholder="give it a title…" maxlength="80">
+    <textarea id="jBody" placeholder="what happened today?"></textarea>
+    <div class="row">
+      <div class="mood" id="jMood" role="radiogroup" aria-label="Mood">
+        <button type="button" data-m="😊" class="sel" title="happy">😊</button>
+        <button type="button" data-m="😌" title="cozy">😌</button>
+        <button type="button" data-m="🤣" title="funny">🤣</button>
+        <button type="button" data-m="😮" title="wow">😮</button>
+        <button type="button" data-m="😢" title="tender">😢</button>
+      </div>
+      <button class="btn" id="jSave">pin it up ✎</button>
+    </div>
+  </section>
+
+  <div id="entries"></div>
+  <p class="empty" id="emptyMsg" hidden>nothing here yet — pin your first memory above ✎</p>
+  <p class="note">entries live only in this browser's storage. to share them with the family, this page will grow a shared backend someday.</p>
+</div>
+
+<script>
+(function(){
+  var KEY = 'yuFamilyJournal.v1';
+  var titleEl = document.getElementById('jTitle');
+  var bodyEl = document.getElementById('jBody');
+  var entriesEl = document.getElementById('entries');
+  var emptyMsg = document.getElementById('emptyMsg');
+  var moodEl = document.getElementById('jMood');
+  var mood = '😊';
+
+  moodEl.addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    mood = b.getAttribute('data-m');
+    Array.prototype.forEach.call(moodEl.querySelectorAll('button'), function(x){
+      x.classList.toggle('sel', x === b);
+    });
+  });
+
+  function load(){
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
+    catch(e){ return []; }
+  }
+  function save(list){
+    try { localStorage.setItem(KEY, JSON.stringify(list)); } catch(e){}
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function fmtDate(ts){
+    var d = new Date(ts);
+    return d.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+  }
+
+  function render(){
+    var list = load();
+    entriesEl.innerHTML = '';
+    emptyMsg.hidden = list.length > 0;
+    list.forEach(function(en, i){
+      var div = document.createElement('article');
+      div.className = 'entry';
+      div.innerHTML =
+        '<div class="entry-head"><span class="m">' + esc(en.mood || '😊') + '</span>' +
+        '<h3>' + esc(en.title || 'untitled') + '</h3>' +
+        '<span class="date">' + esc(fmtDate(en.ts)) + '</span></div>' +
+        '<div class="entry-body">' + esc(en.body || '') + '</div>' +
+        '<div class="entry-actions"><button type="button" data-act="del">take down</button></div>';
+      div.querySelector('[data-act=del]').addEventListener('click', function(){
+        if(!confirm('Take this entry down?')) return;
+        var l = load(); l.splice(i, 1); save(l); render();
+      });
+      entriesEl.appendChild(div);
+    });
+  }
+
+  document.getElementById('jSave').addEventListener('click', function(){
+    var title = titleEl.value.trim();
+    var body = bodyEl.value.trim();
+    if(!title && !body) { titleEl.focus(); return; }
+    var list = load();
+    list.unshift({ title: title, body: body, mood: mood, ts: Date.now() });
+    save(list);
+    titleEl.value = ''; bodyEl.value = '';
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
