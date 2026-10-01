@@ -184,6 +184,10 @@
 <g id="ballEgg" tabindex="0" role="button" aria-label="Play Sekai ga Owaru made wa">
   <rect x="110" y="905" width="165" height="125" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
 </g>
+<!-- easter egg: invisible Pikachu hit area (no dot) -->
+<g id="pikaEgg" tabindex="0" role="button" aria-label="Pikachu cry">
+  <rect x="90" y="1045" width="240" height="250" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
 <!-- easter egg: invisible R2-D2 hit area (no dot) -->
 <g id="r2Egg" tabindex="0" role="button" aria-label="Play Duel of the Fates">
   <rect x="195" y="715" width="120" height="145" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
@@ -348,11 +352,12 @@
   bindTap(albumEgg, toggleSara);
 
   // ---- jewel easter egg: Jewel poster plays Foolish Games ----
-  // Foolish Games (Jewel - Topic audio), embeddable per YouTube oEmbed.
+  // Foolish Games (Official HD Music Video, Jewel channel),
+  // embeddable per YouTube oEmbed.
   // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
   var jewelEgg = document.getElementById('jewelEgg');
   var jewelFrame = null, jewelTimer = null;
-  var JEWEL_VIDEO = '6oRCyGmS8-c';
+  var JEWEL_VIDEO = 'UNoouLa7uxA';
   function stopJewel(){
     if(jewelFrame){ jewelFrame.remove(); jewelFrame = null; }
     if(jewelTimer){ clearTimeout(jewelTimer); jewelTimer = null; }
@@ -580,6 +585,36 @@
     r2Timer = setTimeout(function(){ stopR2(); lofiToastMsg(''); }, 260000);
   }
   bindTap(r2Egg, toggleR2);
+
+  // ---- pikachu easter egg: random pika cry ----
+  // A tap on Pikachu plays one random cry from a small soundboard pool.
+  // This never stops any playing music: cries mix over the tune.
+  var pikaEgg = document.getElementById('pikaEgg');
+  var PIKA_CRIES = [
+    'https://play.pokemonshowdown.com/audio/cries/pikachu.mp3',
+    'https://play.pokemonshowdown.com/audio/cries/pikachu-starter.mp3',
+    'https://www.myinstants.com/media/sounds/pikachu-happy.mp3',
+    'https://www.myinstants.com/media/sounds/pika-pika-pikachu.mp3',
+    'https://www.myinstants.com/media/sounds/pika-cry.mp3',
+    'https://www.myinstants.com/media/sounds/pika.mp3',
+    'https://www.myinstants.com/media/sounds/pikachu-laughing.mp3',
+    'https://www.myinstants.com/media/sounds/025-kanto-pikachu.mp3'
+  ];
+  // Preload the pool so the first tap has no latency.
+  PIKA_CRIES.forEach(function(u){
+    var a = new Audio();
+    a.src = u;
+    a.preload = 'auto';
+    a.load();
+  });
+  function pikaCry(){
+    hideHint();
+    // Fresh Audio per tap: rapid taps overlap instead of cutting each other.
+    var a = new Audio(PIKA_CRIES[(Math.random() * PIKA_CRIES.length) | 0]);
+    a.play().catch(function(){});
+    lofiToastMsg('Pika!');
+  }
+  bindTap(pikaEgg, pikaCry);
 
   // ---- basketball easter egg: ball plays Sekai ga Owaru made wa... ----
   // WANDS, 2nd ending theme of the Slam Dunk anime (original 1994 recording),
