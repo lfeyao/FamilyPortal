@@ -71,7 +71,7 @@
   }
   .hint.gone { opacity:0; }
   #lofiToast { bottom:84px; }
-  #micEgg:focus { outline:none; }
+  #headphoneEgg:focus { outline:none; }
 
   /* ---------- rotate prompt (portrait phones) ---------- */
   .rotate-prompt {
@@ -110,6 +110,7 @@
     .hint { font-size:20px; bottom:20px; }
     .hotspot text { font-size:62px; }
   }
+
 </style>
 </head>
 <body>
@@ -158,10 +159,11 @@
   <circle class="mote" cx="1250" cy="1250" r="5" style="animation-delay:1.5s"/>
 </g>
 
-<!-- easter egg: invisible mic hit area (no dot) -->
-<g id="micEgg" tabindex="0" role="button" aria-label="Change lofi radio station">
-  <ellipse cx="2738" cy="1316" rx="76" ry="195" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+<!-- easter egg: invisible headphones hit area (no dot) -->
+<g id="headphoneEgg" tabindex="0" role="button" aria-label="Change lofi radio station">
+  <rect x="1660" y="745" width="150" height="150" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
 </g>
+<!-- mic spot (bottom-right corner): reserved, currently no action -->
 <!-- easter egg: invisible Good Grief album hit area (no dot) -->
 <g id="albumEgg" tabindex="0" role="button" aria-label="Play Salt Then Sour Then Sweet">
   <rect x="2440" y="327" width="321" height="269" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
@@ -309,7 +311,7 @@
     stopBall();
     lofiNextStation();
   }
-  bindTap(document.getElementById('micEgg'), dialLofi);
+  bindTap(document.getElementById('headphoneEgg'), dialLofi);
 
   // ---- album easter egg: Good Grief frame plays Sara Bareilles ----
   // Salt Then Sour Then Sweet (feat. Brandi Carlile) — official audio,
