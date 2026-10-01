@@ -240,10 +240,11 @@
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             z-index: 1000;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 20px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .media-modal.active {
@@ -254,6 +255,7 @@
             max-width: 1000px;
             width: 100%;
             position: relative;
+            margin: auto;
         }
 
         .media-header {
@@ -261,6 +263,13 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 12px 4px;
+            background: rgba(45, 60, 80, 0.94);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
 
         .media-title {
@@ -271,11 +280,12 @@
         }
 
         .btn-close {
-            background: transparent;
+            background: rgba(244, 247, 250, 0.16);
             border: 2px solid #f4f7fa;
             color: #f4f7fa;
-            width: 42px;
-            height: 42px;
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.5rem;
