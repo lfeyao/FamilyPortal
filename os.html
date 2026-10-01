@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yu Family Operating System</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+
+:root{
+  --bg0:#120d08; --bg1:#1e150c;
+  --cream:#fff8ea; --cream-dim:#e9dab9; --muted:#b3a17c;
+  --gold:#ffd97a; --gold-soft:rgba(255,217,122,.14); --line:rgba(255,217,122,.18);
+  --card:rgba(255,248,234,.045);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'DM Sans',sans-serif; color:var(--cream); min-height:100vh;
+  background: radial-gradient(1200px 800px at 50% -10%, #2c2114 0%, var(--bg1) 45%, var(--bg0) 100%);
+  background-attachment: fixed;
+}
+.container{max-width:1020px;margin:0 auto;padding:28px 22px 80px}
+
+/* ---------- top bar ---------- */
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+.btn-back{
+  display:inline-flex;align-items:center;gap:8px;text-decoration:none;
+  background:var(--gold-soft);color:var(--gold);border:1px solid var(--line);
+  padding:9px 20px;border-radius:999px;font-weight:600;font-size:.95rem;
+  transition:all .25s ease;
+}
+.btn-back:hover{background:rgba(255,217,122,.28);transform:translateY(-1px)}
+.btn-back svg{width:17px;height:17px;fill:var(--gold)}
+.version-pill{
+  font-size:.8rem;color:var(--muted);border:1px solid var(--line);
+  padding:7px 16px;border-radius:999px;white-space:nowrap;
+}
+
+/* ---------- hero ---------- */
+.hero{text-align:center;margin:26px 0 46px}
+.hero .kicker{
+  font-family:'Caveat',cursive;font-size:1.5rem;color:var(--gold);
+  letter-spacing:6px;margin-bottom:10px;
+}
+.hero h1{
+  font-family:'Caveat',cursive;font-size:clamp(3rem,8vw,4.6rem);font-weight:700;
+  line-height:1.05;margin-bottom:12px;
+  text-shadow:0 3px 24px rgba(0,0,0,.5);
+}
+.hero .tagline{font-size:1.12rem;color:var(--cream-dim);font-style:italic;margin-bottom:8px}
+.hero .sub{color:var(--muted);font-size:.95rem}
+
+/* ---------- response pattern strip ---------- */
+.pattern{margin-bottom:44px}
+.pattern h2,.section-card h2{font-family:'Caveat',cursive;font-size:2rem;color:var(--gold);margin-bottom:16px}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.step{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:16px 14px;
+}
+.step .n{
+  font-family:'Caveat',cursive;font-size:1.4rem;color:var(--gold);margin-bottom:6px;
+}
+.step strong{display:block;font-size:.92rem;margin-bottom:6px}
+.step p{font-size:.85rem;color:var(--cream-dim);line-height:1.5}
+
+/* ---------- section cards ---------- */
+.section-card{
+  background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:30px 30px 26px;margin-bottom:26px;
+  box-shadow:0 12px 40px rgba(0,0,0,.35);
+}
+.section-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+.numeral{
+  font-family:'Caveat',cursive;font-size:1.5rem;color:var(--bg0);
+  background:var(--gold);border-radius:12px;padding:2px 14px;font-weight:700;
+}
+.section-card h2{margin-bottom:0}
+.section-sub{color:var(--muted);font-style:italic;margin:6px 0 20px;font-size:.98rem}
+.principle{margin-bottom:15px;line-height:1.6;font-size:.98rem;color:var(--cream-dim)}
+.principle strong{color:var(--gold);font-weight:700}
+.principle .attr{color:var(--muted);font-size:.88rem}
+.standard{
+  margin-top:20px;background:var(--gold-soft);border-left:3px solid var(--gold);
+  border-radius:0 12px 12px 0;padding:16px 20px;
+}
+.standard h3{font-family:'Caveat',cursive;font-size:1.35rem;color:var(--gold);margin-bottom:8px}
+.standard ul{list-style:none}
+.standard li{font-size:.92rem;color:var(--cream-dim);line-height:1.55;margin-bottom:6px;padding-left:18px;position:relative}
+.standard li::before{content:'•';color:var(--gold);position:absolute;left:0;font-weight:bold}
+
+/* ---------- audit lines ---------- */
+.audit-line{
+  border-bottom:2px dotted rgba(255,217,122,.35);margin:20px 0 6px;
+  padding-bottom:8px;min-height:44px;
+}
+.audit-line span{font-size:.9rem;color:var(--gold);font-weight:600}
+
+/* ---------- troubleshooting ---------- */
+.trouble{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:18px 20px;margin-bottom:14px;
+}
+.trouble h3{font-family:'Caveat',cursive;font-size:1.45rem;color:var(--cream);margin-bottom:8px}
+.trouble h3 .qn{color:var(--gold);margin-right:8px}
+.trouble dl{font-size:.93rem;line-height:1.6}
+.trouble dt{display:inline;color:var(--gold);font-weight:700}
+.trouble dd{display:inline;color:var(--cream-dim);margin:0}
+.trouble dd::after{content:'';display:block;margin-bottom:4px}
+
+/* ---------- flowchart / questions ---------- */
+.qa-list{list-style:none;margin-top:6px}
+.qa-list li{
+  font-size:.97rem;color:var(--cream-dim);line-height:1.6;margin-bottom:10px;
+  padding-left:22px;position:relative;
+}
+.qa-list li::before{content:'→';color:var(--gold);position:absolute;left:0}
+.flow-q{font-size:1.02rem;color:var(--cream);font-weight:600;margin:14px 0 4px}
+.flow-q span{color:var(--gold);font-family:'Caveat',cursive;font-size:1.3rem;margin-right:8px}
+
+/* ---------- meta ---------- */
+.meta{
+  text-align:center;background:linear-gradient(135deg,rgba(255,217,122,.1),rgba(255,217,122,.03));
+  border:1px solid var(--line);border-radius:20px;padding:34px 28px;margin:40px 0;
+}
+.meta h2{font-family:'Caveat',cursive;font-size:2.2rem;color:var(--gold);margin-bottom:12px}
+.meta p{color:var(--cream-dim);line-height:1.7;max-width:640px;margin:0 auto 10px}
+.meta .roots{color:var(--muted);font-size:.88rem;font-style:italic}
+
+/* ---------- resolutions ---------- */
+.res-section{
+  text-align:center;margin:56px 0 8px;padding-top:34px;
+  border-top:1px solid var(--line);
+}
+.res-section h2{font-family:'Caveat',cursive;font-size:2.8rem;color:var(--gold)}
+.year-box{
+  background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:28px 26px;margin:26px 0;
+  box-shadow:0 12px 40px rgba(0,0,0,.35);
+}
+.year-title{
+  font-family:'Caveat',cursive;font-size:2.1rem;color:var(--cream);
+  margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--line);
+}
+.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.res-col{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:20px 16px;
+}
+.res-col .who{text-align:center;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.res-col .emoji{font-size:2.6rem;display:block;margin-bottom:6px}
+.res-col .name{font-weight:700;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:2px}
+.res-col ul{list-style:none}
+.res-item{
+  background:rgba(255,248,234,.06);border:1px solid rgba(255,217,122,.1);
+  padding:10px 13px;border-radius:10px;margin-bottom:9px;
+  font-size:.9rem;line-height:1.5;color:var(--cream-dim);
+  display:flex;gap:8px;align-items:flex-start;
+}
+.res-item::before{content:'•';color:var(--gold);font-weight:bold;flex-shrink:0}
+.edit-hint{
+  text-align:center;color:var(--muted);font-size:.85rem;margin-top:24px;
+  padding:14px;background:var(--card);border-radius:12px;border:1px solid var(--line);
+}
+.edit-hint code{background:rgba(0,0,0,.35);padding:2px 8px;border-radius:6px;color:var(--gold)}
+
+@media (max-width:900px){ .steps{grid-template-columns:repeat(2,1fr)} .res-grid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:560px){
+  .steps{grid-template-columns:1fr} .res-grid{grid-template-columns:1fr}
+  .section-card{padding:22px 18px}
+  .topbar{flex-wrap:wrap;gap:12px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="topbar">
+    <a href="index.html" class="btn-back">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      Back
+    </a>
+  </div>
+
+  <div class="hero">
+    <div class="kicker">THE MASTER</div>
+    <h1>Yu Family Operating System</h1>
+    <p class="tagline">Face reality. Choose the right game. Act. Learn. Update.</p>
+  </div>
+
+  <!-- I. Foundation -->
+  <div class="section-card">
+    <div class="section-head"><span class="numeral">I</span><h2>The Foundation</h2></div>
+    <p class="section-sub">Radical Reality &amp; Growth Mindset — truth is the input; the belief that you can evolve is the engine.</p>
+    <p class="principle"><strong>Embrace Reality (Observe):</strong> See the world as it is, without wishful thinking. Pain from reality is an education; comfort from illusion is a tax. <span class="attr">(Dalio / Boyd)</span></p>
+    <p class="principle"><strong>The Growth Mindset:</strong> Replace &ldquo;I am not good at this&rdquo; with &ldquo;I am not good at this yet.&rdquo; Struggle is not evidence of incapacity; it is the stimulus for growth. <span class="attr">(Dweck)</span></p>
+    <p class="principle"><strong>Orient Your Mind:</strong> Your orientation &mdash; culture, genetics, experience, incentives, and prior beliefs &mdash; is the filter through which you interpret reality. Update that filter continuously so it does not distort what you see. <span class="attr">(Boyd / Naval)</span></p>
+    <p class="principle"><strong>Fear-Setting:</strong> Define the nightmare in detail, then identify prevention, repair, and recovery. Many apparent risks are temporary injuries to ego rather than irreversible harm. <span class="attr">(Ferriss)</span></p>
+    <p class="principle"><strong>Pain + Reflection = Progress:</strong> Failure produces learning only when reflection converts the burn into an improved model or behavior. <span class="attr">(Dalio)</span></p>
+    <p class="principle"><strong>Perseverance &amp; Soldiering Through:</strong> Assume that difficult is not impossible. Apply disciplined persistence until evidence &mdash; not discomfort &mdash; shows that the path should change.</p>
+    <p class="principle"><strong>Do Hard Things:</strong> Do not optimize for the bare minimum. The final ten percent of thoughtful effort often creates disproportionate quality, trust, and durability.</p>
+    <p class="principle"><strong>Global Resilience:</strong> Do not optimize for a local maximum of comfort or a local minimum of pain. Build the ability to remain effective across environments and over long time horizons.</p>
+  </div>
+
+  <!-- II. Engine -->
+  <div class="section-card">
+    <div class="section-head"><span class="numeral">II</span><h2>The Engine</h2></div>
+    <p class="section-sub">Mastery, Habits &amp; Deconstruction — you do not rise to the level of your goals; you fall to the level of your systems.</p>
+    <p class="principle"><strong>1% Better Every Day:</strong> Small improvements compound. Judge progress by the direction and quality of the trajectory, not by one noisy result. <span class="attr">(Clear)</span></p>
+    <p class="principle"><strong>Identity-Based Habits:</strong> Focus on who you are becoming, not only on the target you want to reach. Every repeated action is a vote for a future identity. <span class="attr">(Clear)</span></p>
+    <p class="principle"><strong>Deconstruct &amp; Master Fundamentals:</strong> Break a skill into small components. Practice the &ldquo;Small Circle&rdquo; of essential movements until the fundamentals become instinctive. <span class="attr">(Waitzkin / Ferriss)</span></p>
+    <p class="principle"><strong>Step-by-Step Problem Solving:</strong> No tractable problem is too hard when framed correctly and reduced to the next solvable step. Asking the right question is often the highest-leverage act.</p>
+    <p class="principle"><strong>The Soft Zone:</strong> Train under imperfect conditions. A skill that works only in silence and certainty is brittle; mastery can absorb distraction and disorder. <span class="attr">(Waitzkin)</span></p>
+    <p class="principle"><strong>Make It Easy:</strong> Design the environment so the desired behavior has less friction than the undesired behavior. Do not ask willpower to compensate for poor design. <span class="attr">(Clear)</span></p>
+  </div>
+
+  <!-- III. Strategy -->
+  <div class="section-card">
+    <div class="section-head"><span class="numeral">III</span><h2>The Strategy</h2></div>
+    <p class="section-sub">Wealth, Leverage &amp; Tempo — hard work is the price of entry; judgment, leverage, and game selection are the exit.</p>
+    <p class="principle"><strong>Game Selection:</strong> You may become effective at whatever game you play, so choose the game deliberately. Ask: Why are we playing? What outcome matters? Who are we playing with?</p>
+    <p class="principle"><strong>Play Great Games:</strong> Prefer iterative, positive-sum games in which experience, trust, and assets compound. Stupid games produce stupid prizes; great games produce great prizes.</p>
+    <p class="principle"><strong>Tempo (The OODA Loop):</strong> The advantage goes to the person who cycles through Observe &rarr; Orient &rarr; Decide &rarr; Act faster than the environment changes. Do not wait for perfect information when a reversible action can generate better information. <span class="attr">(Boyd)</span></p>
+    <p class="principle"><strong>The Lead Domino (80/20):</strong> Find the one action that makes everything else easier or unnecessary. Concentrate effort where it changes the system, not merely the workload. <span class="attr">(Ferriss / Clear)</span></p>
+    <p class="principle"><strong>Judgment Over Hustle:</strong> Knowing where to run matters more than running faster. Direction precedes intensity. <span class="attr">(Naval)</span></p>
+    <p class="principle"><strong>The Three Levers of Leverage:</strong> Use capital, labor, and code or media to multiply good judgment. Leverage amplifies both wisdom and error, so apply it after orientation. <span class="attr">(Naval)</span></p>
+    <p class="principle"><strong>Build Specific Knowledge:</strong> Pursue genuine curiosity and develop knowledge that is difficult to train, outsource, or imitate. Uniqueness reduces direct competition. <span class="attr">(Naval)</span></p>
+  </div>
+
+  <!-- IV. Internal OS -->
+  <div class="section-card">
+    <div class="section-head"><span class="numeral">IV</span><h2>The Internal OS</h2></div>
+    <p class="section-sub">Happiness, Identity &amp; Peace — the quality of life is shaped by daily habits and the state from which action begins.</p>
+    <p class="principle"><strong>Happiness Is a Choice:</strong> Happiness is a skill to practice, not a trophy to win later. Notice the demand that reality be different, then return attention to what can be chosen now. <span class="attr">(Naval)</span></p>
+    <p class="principle"><strong>Mean Reversion:</strong> Happiness tends to return toward its baseline. If contentment is always deferred until the next achievement, the next achievement will not solve the pattern.</p>
+    <p class="principle"><strong>The Level 99 Trap:</strong> The joy is in leveling up. Once the destination becomes the only source of meaning, reaching it can make the game feel empty.</p>
+    <p class="principle"><strong>Focus on the Process:</strong> Loving the work itself reduces dependence on the emotional swings of winning and losing. <span class="attr">(Waitzkin / Dweck)</span></p>
+    <p class="principle"><strong>Stress + Recovery = Growth:</strong> Demand and rest are a pair. Sustainable high performance requires deliberate recovery; otherwise the body eventually imposes it. <span class="attr">(Waitzkin / Ferriss)</span></p>
+    <p class="principle"><strong>Presence Is Power:</strong> A mind fixed on the future becomes anxious; a mind trapped in the past becomes regretful. Mastery is practiced in the present. <span class="attr">(Waitzkin / Naval)</span></p>
+  </div>
+
+  <!-- V. Execution -->
+  <div class="section-card">
+    <div class="section-head"><span class="numeral">V</span><h2>Execution</h2></div>
+    <p class="section-sub">The Tactical Loop — clarity on paper forces clarity in action. Getting an answer is easy; asking the right question is hard.</p>
+    <p class="principle"><strong>Decision rule under uncertainty:</strong></p>
+    <p class="principle" style="padding-left:18px">&mdash; If the action is reversible and downside is bounded, act at roughly 70% certainty to gather information.</p>
+    <p class="principle" style="padding-left:18px">&mdash; If the action is irreversible or the downside is severe, slow down, seek stronger evidence, and preserve human judgment.</p>
+    <p class="principle" style="padding-left:18px">&mdash; Never confuse speed with haste: tempo includes re-orientation, not just motion.</p>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="section-card">
+    <div class="section-head"><span class="numeral">VI</span><h2>Troubleshooting Logic Tree</h2></div>
+    <p class="section-sub">Categorize first, then apply the section&rsquo;s principles.</p>
+
+    <div class="trouble">
+      <h3><span class="qn">1.</span>&ldquo;I am stuck and do not know what to do next.&rdquo;</h3>
+      <dl>
+        <dt>Issue:</dt> <dd>Lack of clarity or overwhelming complexity.</dd>
+        <dt>Use:</dt> <dd>Section V &mdash; Execution &amp; OODA</dd>
+        <dt>Action:</dt> <dd>Stop. Observe the facts. Frame the question. Ask, &ldquo;What would this look like if it were easy?&rdquo; Then find the lead domino.</dd>
+      </dl>
+    </div>
+    <div class="trouble">
+      <h3><span class="qn">2.</span>&ldquo;I keep failing at the same thing.&rdquo;</h3>
+      <dl>
+        <dt>Issue:</dt> <dd>Brittle mental models or poor learning habits.</dd>
+        <dt>Use:</dt> <dd>Sections I &amp; II &mdash; Growth and Mastery</dd>
+        <dt>Action:</dt> <dd>Add &ldquo;yet.&rdquo; Deconstruct the skill, shrink the circle, practice the fundamentals, and reflect on the failure.</dd>
+      </dl>
+    </div>
+    <div class="trouble">
+      <h3><span class="qn">3.</span>&ldquo;I know what to do, but I am not doing it.&rdquo;</h3>
+      <dl>
+        <dt>Issue:</dt> <dd>Weak systems or environmental friction.</dd>
+        <dt>Use:</dt> <dd>Section II &mdash; Habits</dd>
+        <dt>Action:</dt> <dd>Stop relying on willpower. Make the desired action obvious and easy. Ask whether the action votes for the intended identity.</dd>
+      </dl>
+    </div>
+    <div class="trouble">
+      <h3><span class="qn">4.</span>&ldquo;I feel anxious, angry, or overwhelmed.&rdquo;</h3>
+      <dl>
+        <dt>Issue:</dt> <dd>The internal state is degrading judgment.</dd>
+        <dt>Use:</dt> <dd>Section IV &mdash; Internal OS</dd>
+        <dt>Action:</dt> <dd>Observe the desire for reality to be different. Return to presence, enter the soft zone, and check whether recovery is missing.</dd>
+      </dl>
+    </div>
+    <div class="trouble">
+      <h3><span class="qn">5.</span>&ldquo;I work hard, but I am not becoming free.&rdquo;</h3>
+      <dl>
+        <dt>Issue:</dt> <dd>Low leverage or poor game selection.</dd>
+        <dt>Use:</dt> <dd>Section III &mdash; Strategy</dd>
+        <dt>Action:</dt> <dd>Audit the game and the leverage. Ask whether capital, labor, code, or media can compound the work &mdash; and whether the game is worth winning.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Resolutions -->
+  <div class="res-section">
+    <h2>New Year Resolutions</h2>
+  </div>
+  <div id="resolutions-container"></div>
+</div>
+
+<script>
+const people = {
+  dan:       { emoji: '🐟', name: 'Dan' },
+  cat:       { emoji: '🐱', name: 'Cat' },
+  sebastian: { emoji: '🐧', name: 'Sebastian' },
+  elle:      { emoji: '🦦', name: 'Elle' }
+};
+
+const RESOLUTIONS_DATA = {
+  "2025": {
+    "dan": [
+      "Use the Tonal 3x a week",
+      "Plan a trip to Japan",
+      "Connect with friends more often"
+    ],
+    "cat": [
+      "Exercise 5x a week",
+      "Go to bed by 11pm every night",
+      "Drink green tea 6x a week"
+    ],
+    "sebastian": [
+      "Be more responsible and help more around the house",
+      "Read 100 books",
+      "Get a cat or dog",
+      "Finish Suzuki"
+    ],
+    "elle": [
+      "Read 101 books",
+      "Learn Calculus",
+      "Participate in the spelling bee"
+    ]
+  }
+};
+
+function renderResolutions(data){
+  const container = document.getElementById('resolutions-container');
+  container.innerHTML = '';
+  if(!data){ container.innerHTML = '<p style="text-align:center;color:var(--muted)">Could not load resolutions.</p>'; return; }
+  const years = Object.keys(data).sort((a,b) => b - a);
+  years.forEach(year => {
+    const yearData = data[year];
+    let cols = '';
+    Object.keys(people).forEach(pk => {
+      const person = people[pk];
+      const items = (yearData[pk] || []).map(t => {
+        const d = document.createElement('div'); d.textContent = t;
+        return '<li class="res-item"><span>' + d.innerHTML + '</span></li>';
+      }).join('') || '<li class="res-item"><span>No resolutions yet</span></li>';
+      cols += '<div class="res-col"><div class="who"><span class="emoji">' + person.emoji +
+              '</span><span class="name">' + person.name + '</span></div><ul>' + items + '</ul></div>';
+    });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = '<div class="year-box"><h3 class="year-title">' + year + ' Resolutions</h3>' +
+                     '<div class="res-grid">' + cols + '</div></div>';
+    container.appendChild(wrap);
+  });
+}
+renderResolutions(RESOLUTIONS_DATA);
+</script>
+</body>
+</html>
