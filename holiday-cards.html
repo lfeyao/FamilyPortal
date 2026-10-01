@@ -3,23 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Holiday Cards - Yu Family Lagoon</title>
-    
+    <title>Holiday Cards &amp; Concerts</title>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+
         :root {
-            --primary-dark: #1a1815;
-            --primary-warm: #8b5a3c;
-            --accent-gold: #d4a574;
-            --accent-sage: #7a8471;
-            --cream: #faf8f3;
-            --soft-gray: #e8e4dd;
-            --text-primary: #2c2925;
-            --text-secondary: #6b635a;
-            --shadow-soft: 0 4px 6px rgba(26, 24, 21, 0.07);
-            --shadow-medium: 0 10px 25px rgba(26, 24, 21, 0.1);
-            --shadow-large: 0 20px 40px rgba(26, 24, 21, 0.15);
+            --ink: #3a4a5c;
+            --ink-soft: #5d7186;
+            --ink-faint: #8ba0b5;
+            --gold: #c9a25e;
+            --gold-deep: #a8823f;
+            --frost: rgba(255, 255, 255, 0.6);
+            --frost-line: rgba(255, 255, 255, 0.75);
         }
 
         * {
@@ -30,70 +26,120 @@
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background: linear-gradient(135deg, #1a1815 0%, #2c2925 100%);
             min-height: 100vh;
-            color: var(--cream);
+            color: var(--ink);
+            background:
+                radial-gradient(900px 500px at 50% -8%, rgba(255,255,255,.85) 0%, rgba(255,255,255,0) 60%),
+                linear-gradient(160deg, #e9eff5 0%, #d8e3ed 48%, #c2d2e3 100%);
+            background-attachment: fixed;
+        }
+
+        /* window panes */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                linear-gradient(rgba(255,255,255,.55) 3px, transparent 3px),
+                linear-gradient(90deg, rgba(255,255,255,.55) 3px, transparent 3px);
+            background-size: 300px 360px;
+        }
+
+        /* falling snow */
+        .snow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 50;
+            overflow: hidden;
+        }
+        .snow span {
+            position: absolute;
+            top: -14px;
+            background: #fff;
+            border-radius: 50%;
+            animation-name: snowfall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+        @keyframes snowfall {
+            to { transform: translateY(114vh) translateX(5vw); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .snow span { animation: none; display: none; }
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 24px 20px 70px;
+            position: relative;
+            z-index: 1;
         }
 
+        /* ---------- header : back button on the left ---------- */
         .header {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            background: var(--frost);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--frost-line);
             border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 40px;
-            display: flex;
-            justify-content: space-between;
+            padding: 22px 28px;
+            margin-bottom: 38px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .header h1 {
-            font-family: 'Crimson Text', serif;
-            font-size: 2.2rem;
-            color: var(--cream);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header h1 span {
-            font-size: 2rem;
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(90, 110, 135, 0.16);
         }
 
         .btn-back {
-            background: var(--accent-gold);
-            color: var(--primary-dark);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
+            justify-self: start;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
+            background: rgba(255, 255, 255, 0.75);
+            color: var(--ink);
+            border: 1px solid rgba(140, 160, 185, 0.35);
+            padding: 9px 22px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
             text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(90, 110, 135, 0.12);
         }
 
         .btn-back:hover {
-            background: var(--cream);
             transform: translateY(-2px);
+            border-color: var(--gold);
+            box-shadow: 0 8px 20px rgba(90, 110, 135, 0.2);
         }
 
         .btn-back svg {
-            width: 18px;
-            height: 18px;
-            fill: var(--primary-dark);
+            width: 17px;
+            height: 17px;
+            fill: var(--ink);
         }
 
+        .header h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 2.7rem;
+            font-weight: 700;
+            color: var(--ink);
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .header h1 span {
+            font-size: 2.4rem;
+            margin-right: 6px;
+        }
+
+        /* ---------- year cards ---------- */
         .years-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -101,16 +147,18 @@
         }
 
         .year-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--frost);
             backdrop-filter: blur(10px);
-            border-radius: 16px;
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 18px;
             padding: 30px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--frost-line);
+            box-shadow: 0 8px 24px rgba(90, 110, 135, 0.12);
             text-decoration: none;
-            color: var(--cream);
+            color: var(--ink);
             position: relative;
             overflow: hidden;
         }
@@ -122,15 +170,15 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(212, 165, 116, 0.1), transparent);
+            background: linear-gradient(135deg, rgba(201, 162, 94, 0.14), transparent 60%);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
 
         .year-card:hover {
             transform: translateY(-8px);
-            border-color: var(--accent-gold);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: var(--gold);
+            box-shadow: 0 20px 44px rgba(90, 110, 135, 0.24);
         }
 
         .year-card:hover::before {
@@ -139,29 +187,31 @@
 
         .year-icon {
             font-size: 3rem;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: block;
+            filter: saturate(0.85);
         }
 
         .year-number {
-            font-family: 'Crimson Text', serif;
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: var(--accent-gold);
+            font-family: 'Caveat', cursive;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--gold-deep);
             position: relative;
             z-index: 1;
+            line-height: 1;
         }
 
         .year-label {
             font-size: 0.9rem;
-            color: var(--soft-gray);
+            color: var(--ink-soft);
             margin-top: 8px;
             position: relative;
             z-index: 1;
         }
 
         .play-icon {
-            margin-top: 15px;
+            margin-top: 14px;
             opacity: 0;
             transform: scale(0.8);
             transition: all 0.3s ease;
@@ -173,12 +223,12 @@
         }
 
         .play-icon svg {
-            width: 40px;
-            height: 40px;
-            fill: var(--accent-gold);
+            width: 38px;
+            height: 38px;
+            fill: var(--gold-deep);
         }
 
-        /* Media Modal */
+        /* ---------- media modal ---------- */
         .media-modal {
             display: none;
             position: fixed;
@@ -186,7 +236,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(45, 60, 80, 0.92);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -212,20 +264,22 @@
         }
 
         .media-title {
-            font-family: 'Crimson Text', serif;
-            font-size: 1.8rem;
-            color: var(--cream);
+            font-family: 'Caveat', cursive;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #f4f7fa;
         }
 
         .btn-close {
             background: transparent;
-            border: 2px solid var(--cream);
-            color: var(--cream);
-            width: 40px;
-            height: 40px;
+            border: 2px solid #f4f7fa;
+            color: #f4f7fa;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.5rem;
+            line-height: 1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -233,8 +287,8 @@
         }
 
         .btn-close:hover {
-            background: var(--cream);
-            color: var(--primary-dark);
+            background: #f4f7fa;
+            color: #2d3c50;
         }
 
         .media-section {
@@ -242,8 +296,9 @@
         }
 
         .media-section-title {
-            font-size: 1.1rem;
-            color: var(--accent-gold);
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #e8c87e;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -253,20 +308,21 @@
         .media-section-title svg {
             width: 24px;
             height: 24px;
-            fill: var(--accent-gold);
+            fill: #e8c87e;
         }
 
         .video-player {
             width: 100%;
             border-radius: 12px;
             background: #000;
+            box-shadow: 0 16px 44px rgba(0, 0, 0, 0.35);
         }
 
         .audio-section {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.16);
         }
 
         .audio-player {
@@ -275,9 +331,9 @@
         }
 
         .media-error {
-            background: rgba(201, 48, 44, 0.2);
-            border: 1px solid rgba(201, 48, 44, 0.5);
-            color: #ff6b6b;
+            background: rgba(201, 48, 44, 0.14);
+            border: 1px solid rgba(201, 48, 44, 0.4);
+            color: #ffb3b3;
             padding: 20px;
             border-radius: 12px;
             text-align: center;
@@ -285,9 +341,9 @@
         }
 
         .no-content {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--soft-gray);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #c8d4e0;
             padding: 40px;
             border-radius: 12px;
             text-align: center;
@@ -295,10 +351,10 @@
         }
 
         .photo-container {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             padding: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.16);
         }
 
         .family-photo {
@@ -311,28 +367,25 @@
 
         @media (max-width: 768px) {
             .header {
-                padding: 20px;
+                padding: 18px 16px;
+                grid-template-columns: auto 1fr;
             }
-
             .header h1 {
-                font-size: 1.6rem;
+                font-size: 1.9rem;
+                text-align: left;
             }
-
             .years-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
             }
-
             .year-card {
                 padding: 20px;
             }
-
             .year-number {
-                font-size: 2rem;
+                font-size: 2.4rem;
             }
-
             .media-title {
-                font-size: 1.3rem;
+                font-size: 1.7rem;
             }
         }
 
@@ -344,22 +397,25 @@
     </style>
 </head>
 <body>
+    <div class="snow" id="snow"></div>
+
     <div class="container">
         <div class="header">
-            <h1><span>🎄</span> Holiday Cards & Concerts</h1>
-            <a href="portal.html" class="btn-back">
+            <a href="index.html" class="btn-back">
                 <svg viewBox="0 0 24 24">
                     <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
                 </svg>
-                Back to Portal
+                Back
             </a>
+            <h1><span>🎄</span> Holiday Cards &amp; Concerts</h1>
+            <span></span>
         </div>
 
         <div class="years-grid">
             <a class="year-card" onclick="openYear(2025)">
                 <span class="year-icon">✨</span>
                 <div class="year-number">2025</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -368,7 +424,7 @@
             <a class="year-card" onclick="openYear(2024)">
                 <span class="year-icon">🎅</span>
                 <div class="year-number">2024</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -377,7 +433,7 @@
             <a class="year-card" onclick="openYear(2023)">
                 <span class="year-icon">⛄</span>
                 <div class="year-number">2023</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -386,7 +442,7 @@
             <a class="year-card" onclick="openYear(2022)">
                 <span class="year-icon">🎁</span>
                 <div class="year-number">2022</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -395,7 +451,7 @@
             <a class="year-card" onclick="openYear(2021)">
                 <span class="year-icon">❄️</span>
                 <div class="year-number">2021</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -404,7 +460,7 @@
             <a class="year-card" onclick="openYear(2020)">
                 <span class="year-icon">🌟</span>
                 <div class="year-number">2020</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -413,7 +469,7 @@
             <a class="year-card" onclick="openYear(2019)">
                 <span class="year-icon">🎄</span>
                 <div class="year-number">2019</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -422,7 +478,7 @@
             <a class="year-card" onclick="openYear(2018)">
                 <span class="year-icon">🦌</span>
                 <div class="year-number">2018</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -431,7 +487,7 @@
             <a class="year-card" onclick="openYear(2017)">
                 <span class="year-icon">🔔</span>
                 <div class="year-number">2017</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -440,7 +496,7 @@
             <a class="year-card" onclick="openYear(2016)">
                 <span class="year-icon">🎶</span>
                 <div class="year-number">2016</div>
-                <div class="year-label">Holiday Card & Concert</div>
+                <div class="year-label">Holiday Card &amp; Concert</div>
                 <div class="play-icon">
                     <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
@@ -455,7 +511,7 @@
                 <h2 class="media-title" id="mediaTitle">2025</h2>
                 <button class="btn-close" onclick="closeMedia()">×</button>
             </div>
-            
+
             <!-- Video Section -->
             <div class="media-section" id="videoSection">
                 <div class="media-section-title">
@@ -469,7 +525,7 @@
                     <p>🎬 No holiday card video for this year</p>
                 </div>
             </div>
-            
+
             <!-- Audio Section -->
             <div class="media-section" id="audioSection">
                 <div class="media-section-title">
@@ -485,7 +541,7 @@
                     <p>🎵 No concert recording for this year</p>
                 </div>
             </div>
-            
+
             <!-- Photo Section -->
             <div class="media-section" id="photoSection" style="display: none;">
                 <div class="media-section-title">
@@ -514,63 +570,75 @@
             const audioSection = document.getElementById('audioSection');
             const photoSection = document.getElementById('photoSection');
             const familyPhoto = document.getElementById('familyPhoto');
-            
+
             // Set title
             title.textContent = `${year} - Holiday Card & Concert`;
-            
+
             // Reset states
             video.style.display = 'block';
             audio.parentElement.style.display = 'block';
             videoError.style.display = 'none';
             audioError.style.display = 'none';
             photoSection.style.display = 'none';
-            
+
             // Set video source
             const videoSrc = `${LFS_BASE}/static/Holiday_Card_${year}.mp4`;
             video.src = videoSrc;
-            
+
             // Handle video error
             video.onerror = function() {
                 video.style.display = 'none';
                 videoError.style.display = 'block';
             };
-            
-            // Set audio source (from local static folder)
-            const audioSrc = `static/Concert_${year}.mp3`;
-            audio.src = audioSrc;
-            
-            // Handle audio error
+
+            // Concert audio streams from the GitHub CDN (large media files are
+            // excluded from the Cloudflare Pages build), with the site-local
+            // copy as a fallback.
+            const audioSrcs = [
+                `https://raw.githubusercontent.com/lfeyao/FamilyPortal/main/static/Concert_${year}.mp3`,
+                `static/Concert_${year}.mp3`
+            ];
+            let audioIdx = 0;
+            audio.src = audioSrcs[audioIdx];
+
+            // Handle audio error: try the next source, then show "no recording"
             audio.onerror = function() {
+                audioIdx++;
+                if (audioIdx < audioSrcs.length) {
+                    audio.src = audioSrcs[audioIdx];
+                    audio.load();
+                    return;
+                }
                 audio.parentElement.style.display = 'none';
                 audioError.style.display = 'block';
             };
-            
+
             // Try to load family photo (check multiple extensions)
             const extensions = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
             let photoFound = false;
             let extensionIndex = 0;
-            
+
             function tryNextExtension() {
                 if (extensionIndex >= extensions.length) {
                     // No photo found, keep section hidden
                     return;
                 }
-                
+
                 const photoSrc = `static/Pic_${year}.${extensions[extensionIndex]}`;
                 familyPhoto.src = photoSrc;
             }
-            
+
             familyPhoto.onload = function() {
                 photoSection.style.display = 'block';
             };
-            
+
             familyPhoto.onerror = function() {
                 extensionIndex++;
                 tryNextExtension();
             };
-            
+
             tryNextExtension();
-            
+
             modal.classList.add('active');
         }
 
@@ -578,7 +646,7 @@
             const modal = document.getElementById('mediaModal');
             const video = document.getElementById('videoPlayer');
             const audio = document.getElementById('audioPlayer');
-            
+
             video.pause();
             audio.pause();
             video.src = '';
@@ -599,6 +667,24 @@
                 closeMedia();
             }
         });
+
+        // Falling snow
+        (function() {
+            var box = document.getElementById('snow');
+            var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduced || !box) return;
+            for (var i = 0; i < 70; i++) {
+                var f = document.createElement('span');
+                var size = 3 + Math.random() * 6;
+                f.style.left = (Math.random() * 100) + 'vw';
+                f.style.width = size + 'px';
+                f.style.height = size + 'px';
+                f.style.opacity = (0.35 + Math.random() * 0.5).toFixed(2);
+                f.style.animationDuration = (9 + Math.random() * 10).toFixed(1) + 's';
+                f.style.animationDelay = (-Math.random() * 15).toFixed(1) + 's';
+                box.appendChild(f);
+            }
+        })();
     </script>
 </body>
 </html>
