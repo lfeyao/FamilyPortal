@@ -176,6 +176,38 @@
 <g id="albumEgg" tabindex="0" role="button" aria-label="Play Salt Then Sour Then Sweet">
   <rect x="2440" y="327" width="321" height="269" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
 </g>
+<!-- easter egg: invisible Jewel poster hit area (no dot) -->
+<g id="jewelEgg" tabindex="0" role="button" aria-label="Play Foolish Games">
+  <rect x="2614" y="651" width="155" height="191" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
+<!-- easter egg: invisible basketball hit area (no dot) -->
+<g id="ballEgg" tabindex="0" role="button" aria-label="Play Sekai ga Owaru made wa">
+  <rect x="110" y="905" width="165" height="125" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
+<!-- easter egg: invisible R2-D2 hit area (no dot) -->
+<g id="r2Egg" tabindex="0" role="button" aria-label="Play Duel of the Fates">
+  <rect x="195" y="715" width="120" height="145" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
+<!-- easter egg: invisible X-wing hit area (no dot) -->
+<g id="xwingEgg" tabindex="0" role="button" aria-label="Play Star Wars Main Theme">
+  <rect x="165" y="580" width="170" height="115" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
+<!-- easter egg: invisible Ellie statue hit area (no dot) -->
+<g id="ellieEgg" tabindex="0" role="button" aria-label="Play The Last of Us Main Theme">
+  <rect x="17" y="478" width="157" height="376" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
+<!-- easter egg: invisible Jinx postcard hit area (no dot) -->
+<g id="jinxEgg" tabindex="0" role="button" aria-label="Play Paint The Town Blue">
+  <rect x="150" y="480" width="165" height="110" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
+<!-- easter egg: invisible FF7 poster hit area (no dot) -->
+<g id="ff7Egg" tabindex="0" role="button" aria-label="Play Aerith's Theme">
+  <rect x="34" y="80" width="261" height="352" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
+<!-- easter egg: invisible La La Land record hit area (no dot) -->
+<g id="lalaEgg" tabindex="0" role="button" aria-label="Play Mia and Sebastian's Theme">
+  <rect x="2620" y="860" width="175" height="110" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
 <rect x="0" y="0" width="2814" height="1536" fill="url(#vignette)" pointer-events="none"/>
 </svg>
 
@@ -269,6 +301,14 @@
   function dialLofi(){
     hideHint();
     stopSara();
+    stopJewel();
+    stopLala();
+    stopFf7();
+    stopJinx();
+    stopEllie();
+    stopXwing();
+    stopR2();
+    stopBall();
     lofiNextStation();
   }
   bindTap(document.getElementById('micEgg'), dialLofi);
@@ -288,6 +328,14 @@
     hideHint();
     if(saraFrame){ stopSara(); lofiToastMsg(''); return; }
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    stopJewel();
+    stopLala();
+    stopFf7();
+    stopJinx();
+    stopEllie();
+    stopXwing();
+    stopR2();
+    stopBall();
     saraFrame = document.createElement('iframe');
     saraFrame.setAttribute('src', 'https://www.youtube.com/embed/' + SARA_VIDEO + '?autoplay=1&rel=0');
     saraFrame.setAttribute('allow', 'autoplay; encrypted-media');
@@ -298,6 +346,274 @@
     saraTimer = setTimeout(function(){ stopSara(); lofiToastMsg(''); }, 210000);
   }
   bindTap(albumEgg, toggleSara);
+
+  // ---- jewel easter egg: Jewel poster plays Foolish Games ----
+  // Foolish Games (Jewel - Topic audio), embeddable per YouTube oEmbed.
+  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  var jewelEgg = document.getElementById('jewelEgg');
+  var jewelFrame = null, jewelTimer = null;
+  var JEWEL_VIDEO = '6oRCyGmS8-c';
+  function stopJewel(){
+    if(jewelFrame){ jewelFrame.remove(); jewelFrame = null; }
+    if(jewelTimer){ clearTimeout(jewelTimer); jewelTimer = null; }
+  }
+  function toggleJewel(){
+    hideHint();
+    if(jewelFrame){ stopJewel(); lofiToastMsg(''); return; }
+    stopSara();
+    stopLala();
+    stopFf7();
+    stopJinx();
+    stopEllie();
+    stopXwing();
+    stopR2();
+    stopBall();
+    if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    jewelFrame = document.createElement('iframe');
+    jewelFrame.setAttribute('src', 'https://www.youtube.com/embed/' + JEWEL_VIDEO + '?autoplay=1&rel=0');
+    jewelFrame.setAttribute('allow', 'autoplay; encrypted-media');
+    jewelFrame.setAttribute('title', 'Foolish Games');
+    jewelFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(jewelFrame);
+    lofiToastMsg('\u266A Foolish Games \u2014 Jewel');
+    jewelTimer = setTimeout(function(){ stopJewel(); lofiToastMsg(''); }, 260000);
+  }
+  bindTap(jewelEgg, toggleJewel);
+
+  // ---- la la land easter egg: record sleeve plays Mia & Sebastian's Theme ----
+  // Justin Hurwitz - Topic audio, embeddable per YouTube oEmbed.
+  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  var lalaEgg = document.getElementById('lalaEgg');
+  var lalaFrame = null, lalaTimer = null;
+  var LALA_VIDEO = 'D3ovuBdbUqk';
+  function stopLala(){
+    if(lalaFrame){ lalaFrame.remove(); lalaFrame = null; }
+    if(lalaTimer){ clearTimeout(lalaTimer); lalaTimer = null; }
+  }
+  function toggleLala(){
+    hideHint();
+    if(lalaFrame){ stopLala(); lofiToastMsg(''); return; }
+    stopSara();
+    stopJewel();
+    stopFf7();
+    stopJinx();
+    stopEllie();
+    stopXwing();
+    stopR2();
+    stopBall();
+    if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    lalaFrame = document.createElement('iframe');
+    lalaFrame.setAttribute('src', 'https://www.youtube.com/embed/' + LALA_VIDEO + '?autoplay=1&rel=0');
+    lalaFrame.setAttribute('allow', 'autoplay; encrypted-media');
+    lalaFrame.setAttribute('title', "Mia and Sebastian's Theme");
+    lalaFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(lalaFrame);
+    lofiToastMsg('\u266A Mia & Sebastian\u2019s Theme \u2014 Justin Hurwitz');
+    lalaTimer = setTimeout(function(){ stopLala(); lofiToastMsg(''); }, 110000);
+  }
+  bindTap(lalaEgg, toggleLala);
+
+  // ---- ff7 easter egg: FF7 poster plays Aerith's Theme ----
+  // Aerith's Theme (Final Fantasy VII) - Nobuo Uematsu - Topic audio,
+  // embeddable per YouTube oEmbed (Distant Worlds orchestral release).
+  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  var ff7Egg = document.getElementById('ff7Egg');
+  var ff7Frame = null, ff7Timer = null;
+  var FF7_VIDEO = 'I73aQlljM70';
+  function stopFf7(){
+    if(ff7Frame){ ff7Frame.remove(); ff7Frame = null; }
+    if(ff7Timer){ clearTimeout(ff7Timer); ff7Timer = null; }
+  }
+  function toggleFf7(){
+    hideHint();
+    if(ff7Frame){ stopFf7(); lofiToastMsg(''); return; }
+    stopSara();
+    stopJewel();
+    stopLala();
+    stopJinx();
+    stopEllie();
+    stopXwing();
+    stopR2();
+    stopBall();
+    if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    ff7Frame = document.createElement('iframe');
+    ff7Frame.setAttribute('src', 'https://www.youtube.com/embed/' + FF7_VIDEO + '?autoplay=1&rel=0');
+    ff7Frame.setAttribute('allow', 'autoplay; encrypted-media');
+    ff7Frame.setAttribute('title', "Aerith's Theme");
+    ff7Frame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(ff7Frame);
+    lofiToastMsg('\u266A Aerith\u2019s Theme \u2014 Nobuo Uematsu');
+    ff7Timer = setTimeout(function(){ stopFf7(); lofiToastMsg(''); }, 360000);
+  }
+  bindTap(ff7Egg, toggleFf7);
+
+  // ---- jinx easter egg: postcard plays Paint The Town Blue (Arcane S2) ----
+  // Official Netflix music video, embeddable per YouTube oEmbed.
+  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  var jinxEgg = document.getElementById('jinxEgg');
+  var jinxFrame = null, jinxTimer = null;
+  var JINX_VIDEO = 'pl2K9rvsS74';
+  function stopJinx(){
+    if(jinxFrame){ jinxFrame.remove(); jinxFrame = null; }
+    if(jinxTimer){ clearTimeout(jinxTimer); jinxTimer = null; }
+  }
+  function toggleJinx(){
+    hideHint();
+    if(jinxFrame){ stopJinx(); lofiToastMsg(''); return; }
+    stopSara();
+    stopJewel();
+    stopLala();
+    stopFf7();
+    stopEllie();
+    stopXwing();
+    stopR2();
+    stopBall();
+    if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    jinxFrame = document.createElement('iframe');
+    jinxFrame.setAttribute('src', 'https://www.youtube.com/embed/' + JINX_VIDEO + '?autoplay=1&rel=0');
+    jinxFrame.setAttribute('allow', 'autoplay; encrypted-media');
+    jinxFrame.setAttribute('title', 'Paint The Town Blue');
+    jinxFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(jinxFrame);
+    lofiToastMsg('\u266A Paint The Town Blue \u2014 Ashnikko');
+    jinxTimer = setTimeout(function(){ stopJinx(); lofiToastMsg(''); }, 140000);
+  }
+  bindTap(jinxEgg, toggleJinx);
+
+  // ---- ellie easter egg: statue plays The Last of Us (Main Theme) ----
+  // Gustavo Santaolalla (SonySoundtracksVEVO), embeddable per YouTube oEmbed.
+  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  var ellieEgg = document.getElementById('ellieEgg');
+  var ellieFrame = null, ellieTimer = null;
+  var ELLIE_VIDEO = 'Pt1pOY3_W64';
+  function stopEllie(){
+    if(ellieFrame){ ellieFrame.remove(); ellieFrame = null; }
+    if(ellieTimer){ clearTimeout(ellieTimer); ellieTimer = null; }
+  }
+  function toggleEllie(){
+    hideHint();
+    if(ellieFrame){ stopEllie(); lofiToastMsg(''); return; }
+    stopSara();
+    stopJewel();
+    stopLala();
+    stopFf7();
+    stopJinx();
+    stopXwing();
+    stopR2();
+    stopBall();
+    if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    ellieFrame = document.createElement('iframe');
+    ellieFrame.setAttribute('src', 'https://www.youtube.com/embed/' + ELLIE_VIDEO + '?autoplay=1&rel=0');
+    ellieFrame.setAttribute('allow', 'autoplay; encrypted-media');
+    ellieFrame.setAttribute('title', 'The Last of Us (Main Theme)');
+    ellieFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(ellieFrame);
+    lofiToastMsg('\u266A The Last of Us (Main Theme) \u2014 Gustavo Santaolalla');
+    ellieTimer = setTimeout(function(){ stopEllie(); lofiToastMsg(''); }, 250000);
+  }
+  bindTap(ellieEgg, toggleEllie);
+
+  // ---- x-wing easter egg: model plays Star Wars (Main Theme) ----
+  // John Williams & London Symphony Orchestra - Topic audio,
+  // embeddable per YouTube oEmbed.
+  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  var xwingEgg = document.getElementById('xwingEgg');
+  var xwingFrame = null, xwingTimer = null;
+  var XWING_VIDEO = 'MNMSAIG0dfQ';
+  function stopXwing(){
+    if(xwingFrame){ xwingFrame.remove(); xwingFrame = null; }
+    if(xwingTimer){ clearTimeout(xwingTimer); xwingTimer = null; }
+  }
+  function toggleXwing(){
+    hideHint();
+    if(xwingFrame){ stopXwing(); lofiToastMsg(''); return; }
+    stopSara();
+    stopJewel();
+    stopLala();
+    stopFf7();
+    stopJinx();
+    stopEllie();
+    stopR2();
+    stopBall();
+    if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    xwingFrame = document.createElement('iframe');
+    xwingFrame.setAttribute('src', 'https://www.youtube.com/embed/' + XWING_VIDEO + '?autoplay=1&rel=0');
+    xwingFrame.setAttribute('allow', 'autoplay; encrypted-media');
+    xwingFrame.setAttribute('title', 'Star Wars (Main Theme)');
+    xwingFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(xwingFrame);
+    lofiToastMsg('\u266A Star Wars (Main Theme) \u2014 John Williams');
+    xwingTimer = setTimeout(function(){ stopXwing(); lofiToastMsg(''); }, 370000);
+  }
+  bindTap(xwingEgg, toggleXwing);
+
+  // ---- r2-d2 easter egg: figure plays Duel of the Fates ----
+  // John Williams / LSO concert-suite recording,
+  // embeddable per YouTube oEmbed.
+  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  var r2Egg = document.getElementById('r2Egg');
+  var r2Frame = null, r2Timer = null;
+  var R2_VIDEO = 'xlYCxbBZUCY';
+  function stopR2(){
+    if(r2Frame){ r2Frame.remove(); r2Frame = null; }
+    if(r2Timer){ clearTimeout(r2Timer); r2Timer = null; }
+  }
+  function toggleR2(){
+    hideHint();
+    if(r2Frame){ stopR2(); lofiToastMsg(''); return; }
+    stopSara();
+    stopJewel();
+    stopLala();
+    stopFf7();
+    stopJinx();
+    stopEllie();
+    stopXwing();
+    stopBall();
+    if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    r2Frame = document.createElement('iframe');
+    r2Frame.setAttribute('src', 'https://www.youtube.com/embed/' + R2_VIDEO + '?autoplay=1&rel=0');
+    r2Frame.setAttribute('allow', 'autoplay; encrypted-media');
+    r2Frame.setAttribute('title', 'Duel of the Fates');
+    r2Frame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(r2Frame);
+    lofiToastMsg('\u266A Duel of the Fates \u2014 John Williams');
+    r2Timer = setTimeout(function(){ stopR2(); lofiToastMsg(''); }, 260000);
+  }
+  bindTap(r2Egg, toggleR2);
+
+  // ---- basketball easter egg: ball plays Sekai ga Owaru made wa... ----
+  // WANDS, 2nd ending theme of the Slam Dunk anime (original 1994 recording),
+  // embeddable per YouTube oEmbed.
+  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  var ballEgg = document.getElementById('ballEgg');
+  var ballFrame = null, ballTimer = null;
+  var BALL_VIDEO = 'DPmCeuOkOEY';
+  function stopBall(){
+    if(ballFrame){ ballFrame.remove(); ballFrame = null; }
+    if(ballTimer){ clearTimeout(ballTimer); ballTimer = null; }
+  }
+  function toggleBall(){
+    hideHint();
+    if(ballFrame){ stopBall(); lofiToastMsg(''); return; }
+    stopSara();
+    stopJewel();
+    stopLala();
+    stopFf7();
+    stopJinx();
+    stopEllie();
+    stopXwing();
+    stopR2();
+    if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    ballFrame = document.createElement('iframe');
+    ballFrame.setAttribute('src', 'https://www.youtube.com/embed/' + BALL_VIDEO + '?autoplay=1&rel=0');
+    ballFrame.setAttribute('allow', 'autoplay; encrypted-media');
+    ballFrame.setAttribute('title', 'Sekai ga Owaru made wa');
+    ballFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(ballFrame);
+    lofiToastMsg('\u266A \u4e16\u754c\u304c\u7d42\u308b\u307e\u3067\u306f\u2026 \u2014 WANDS (Slam Dunk)');
+    ballTimer = setTimeout(function(){ stopBall(); lofiToastMsg(''); }, 260000);
+  }
+  bindTap(ballEgg, toggleBall);
 
   // ---- rotate prompt: portrait touch devices ----
   var rotatePrompt = document.getElementById('rotatePrompt');
