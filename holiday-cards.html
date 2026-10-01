@@ -574,44 +574,60 @@
             // Set title
             title.textContent = `${year} - Holiday Card & Concert`;
 
-            // Reset states
-            video.style.display = 'block';
-            audio.parentElement.style.display = 'block';
+            // Reset states (players stay hidden until their source preflight passes)
+            video.style.display = 'none';
+            video.removeAttribute('src');
+            video.load();
+            audio.parentElement.style.display = 'none';
+            audio.removeAttribute('src');
+            audio.load();
             videoError.style.display = 'none';
             audioError.style.display = 'none';
             photoSection.style.display = 'none';
 
-            // Set video source
-            const videoSrc = `${LFS_BASE}/static/Holiday_Card_${year}.mp4`;
-            video.src = videoSrc;
+            // A missing file can leave a media element wedged in a loading
+            // state instead of firing an error, so verify each candidate URL
+            // with a HEAD request first and only then hand it to the player.
+            // Anything that is not really audio/video (gate pages, 404 HTML)
+            // is rejected by the content-type check.
+            function servesMedia(url) {
+                return fetch(url, { method: 'HEAD' }).then(function(r) {
+                    const ct = (r.headers.get('content-type') || '').toLowerCase();
+                    return r.ok && (ct.indexOf('audio') !== -1 || ct.indexOf('video') !== -1 || ct.indexOf('octet-stream') !== -1);
+                }).catch(function() { return false; });
+            }
+            function firstWorking(urls) {
+                return urls.reduce(function(p, u) {
+                    return p.then(function(found) {
+                        if (found) return found;
+                        return servesMedia(u).then(function(ok) { return ok ? u : null; });
+                    });
+                }, Promise.resolve(null));
+            }
 
-            // Handle video error
-            video.onerror = function() {
-                video.style.display = 'none';
-                videoError.style.display = 'block';
-            };
+            // Holiday card video (streams from the GitHub media CDN)
+            firstWorking([`${LFS_BASE}/static/Holiday_Card_${year}.mp4`]).then(function(url) {
+                if (url) {
+                    video.src = url;
+                    video.style.display = 'block';
+                } else {
+                    videoError.style.display = 'block';
+                }
+            });
 
-            // Concert audio streams from the GitHub CDN (large media files are
-            // excluded from the Cloudflare Pages build), with the site-local
-            // copy as a fallback.
-            const audioSrcs = [
+            // Concert recording: GitHub CDN first (large files are excluded
+            // from the Cloudflare Pages build), site-local copy as fallback
+            firstWorking([
                 `https://raw.githubusercontent.com/lfeyao/FamilyPortal/main/static/Concert_${year}.mp3`,
                 `static/Concert_${year}.mp3`
-            ];
-            let audioIdx = 0;
-            audio.src = audioSrcs[audioIdx];
-
-            // Handle audio error: try the next source, then show "no recording"
-            audio.onerror = function() {
-                audioIdx++;
-                if (audioIdx < audioSrcs.length) {
-                    audio.src = audioSrcs[audioIdx];
-                    audio.load();
-                    return;
+            ]).then(function(url) {
+                if (url) {
+                    audio.src = url;
+                    audio.parentElement.style.display = 'block';
+                } else {
+                    audioError.style.display = 'block';
                 }
-                audio.parentElement.style.display = 'none';
-                audioError.style.display = 'block';
-            };
+            });
 
             // Try to load family photo (check multiple extensions)
             const extensions = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
