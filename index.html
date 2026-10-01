@@ -172,6 +172,10 @@
 <g id="micEgg" tabindex="0" role="button" aria-label="Change lofi radio station">
   <ellipse cx="2738" cy="1316" rx="76" ry="195" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
 </g>
+<!-- easter egg: invisible Good Grief album hit area (no dot) -->
+<g id="albumEgg" tabindex="0" role="button" aria-label="Play Salt Then Sour Then Sweet">
+  <rect x="2440" y="327" width="321" height="269" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
 <rect x="0" y="0" width="2814" height="1536" fill="url(#vignette)" pointer-events="none"/>
 </svg>
 
@@ -264,9 +268,36 @@
   lofiAudio.addEventListener('error', function(){ if(lofiIdx >= 0) lofiNextStation(); });
   function dialLofi(){
     hideHint();
+    stopSara();
     lofiNextStation();
   }
   bindTap(document.getElementById('micEgg'), dialLofi);
+
+  // ---- album easter egg: Good Grief frame plays Sara Bareilles ----
+  // Salt Then Sour Then Sweet (feat. Brandi Carlile) — official audio,
+  // embeddable per YouTube oEmbed. Hidden 2px iframe; the tap is the
+  // user gesture that permits autoplay with sound.
+  var albumEgg = document.getElementById('albumEgg');
+  var saraFrame = null, saraTimer = null;
+  var SARA_VIDEO = '_kGptPiFO54';
+  function stopSara(){
+    if(saraFrame){ saraFrame.remove(); saraFrame = null; }
+    if(saraTimer){ clearTimeout(saraTimer); saraTimer = null; }
+  }
+  function toggleSara(){
+    hideHint();
+    if(saraFrame){ stopSara(); lofiToastMsg(''); return; }
+    if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
+    saraFrame = document.createElement('iframe');
+    saraFrame.setAttribute('src', 'https://www.youtube.com/embed/' + SARA_VIDEO + '?autoplay=1&rel=0');
+    saraFrame.setAttribute('allow', 'autoplay; encrypted-media');
+    saraFrame.setAttribute('title', 'Salt Then Sour Then Sweet');
+    saraFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(saraFrame);
+    lofiToastMsg('\u266A Salt Then Sour Then Sweet \u2014 Sara Bareilles');
+    saraTimer = setTimeout(function(){ stopSara(); lofiToastMsg(''); }, 210000);
+  }
+  bindTap(albumEgg, toggleSara);
 
   // ---- rotate prompt: portrait touch devices ----
   var rotatePrompt = document.getElementById('rotatePrompt');
