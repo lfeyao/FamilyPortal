@@ -169,7 +169,7 @@
 </g>
 
 <!-- easter egg: invisible mic hit area (no dot) -->
-<g id="micEgg" tabindex="0" role="button" aria-label="Toggle lofi beats">
+<g id="micEgg" tabindex="0" role="button" aria-label="Change lofi radio station">
   <ellipse cx="2738" cy="1316" rx="76" ry="195" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
 </g>
 <rect x="0" y="0" width="2814" height="1536" fill="url(#vignette)" pointer-events="none"/>
@@ -226,40 +226,47 @@
   bindTap(document.getElementById('hsTravel'), function(){ hideHint(); window.open('https://travelnotes-423.pages.dev', '_blank', 'noopener'); });
   bindTap(document.getElementById('hsTwins'), function(){ hideHint(); window.open('https://yutwin.github.io', '_blank', 'noopener'); });
 
-  // ---- mic easter egg: streaming lofi beats (tap mic to toggle) ----
+  // ---- mic easter egg: Lofi Cafe radio dial (tap mic to change station) ----
   var lofiAudio = document.getElementById('lofiAudio');
   var lofiToast = document.getElementById('lofiToast');
-  var lofiSources = [
-    'https://stream.zeno.fm/f3wvbbqmdg8uv',        // listed as Lofi Girl 24/7 lo-fi feed
-    'https://ice1.somafm.com/groovesalad-128-mp3' // SomaFM ambient beats fallback
+  var lofiStations = [
+    { name: 'Japanese Lofi', url: 'https://radio.loficafe.net/listen/japanese-lofi/radio.mp3' },
+    { name: 'Chilling',       url: 'https://radio.loficafe.net/listen/chilling/radio.mp3' },
+    { name: 'Studying',       url: 'https://radio.loficafe.net/listen/studying/radio.mp3' },
+    { name: 'Working',        url: 'https://radio.loficafe.net/listen/working/radio.mp3' },
+    { name: 'Sleeping',       url: 'https://radio.loficafe.net/listen/sleeping/radio.mp3' },
+    { name: 'Gaming',         url: 'https://radio.loficafe.net/listen/gaming/radio.mp3' }
   ];
-  var lofiIdx = 0, lofiOn = false;
+  var lofiIdx = -1; // -1 = off; otherwise index into lofiStations
   function lofiToastMsg(m){
     if(m){ lofiToast.textContent = m; lofiToast.style.display = 'block'; }
     else { lofiToast.style.display = 'none'; }
   }
-  function lofiTryPlay(){
-    lofiAudio.src = lofiSources[lofiIdx];
+  function lofiPlayStation(){
+    lofiAudio.src = lofiStations[lofiIdx].url;
     var pr = lofiAudio.play();
-    if(pr && pr.catch){ pr.catch(function(){ lofiNextSource(); }); }
+    if(pr && pr.catch){ pr.catch(function(){ lofiNextStation(); }); }
   }
-  function lofiNextSource(){
+  function lofiNextStation(){
+    // dialling past the last station turns it off; next tap restarts at Japanese Lofi
     lofiIdx++;
-    if(lofiIdx >= lofiSources.length){
-      lofiIdx = 0; lofiOn = false;
-      lofiToastMsg('stream unavailable');
-      setTimeout(function(){ if(!lofiOn) lofiToastMsg(''); }, 2500);
+    if(lofiIdx >= lofiStations.length){
+      lofiIdx = -1;
+      lofiAudio.pause();
+      lofiAudio.removeAttribute('src');
+      lofiToastMsg('lofi off');
+      setTimeout(function(){ if(lofiIdx < 0) lofiToastMsg(''); }, 2000);
       return;
     }
-    lofiTryPlay();
+    lofiToastMsg('\u266A ' + lofiStations[lofiIdx].name);
+    lofiPlayStation();
   }
-  lofiAudio.addEventListener('error', function(){ if(lofiOn) lofiNextSource(); });
-  function toggleLofi(){
+  lofiAudio.addEventListener('error', function(){ if(lofiIdx >= 0) lofiNextStation(); });
+  function dialLofi(){
     hideHint();
-    if(lofiOn){ lofiOn = false; lofiAudio.pause(); lofiToastMsg(''); }
-    else { lofiOn = true; lofiToastMsg('\u266A lofi beats'); lofiTryPlay(); }
+    lofiNextStation();
   }
-  bindTap(document.getElementById('micEgg'), toggleLofi);
+  bindTap(document.getElementById('micEgg'), dialLofi);
 
   // ---- rotate prompt: portrait touch devices ----
   var rotatePrompt = document.getElementById('rotatePrompt');
