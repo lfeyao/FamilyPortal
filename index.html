@@ -163,7 +163,10 @@
 <g id="headphoneEgg" tabindex="0" role="button" aria-label="Change lofi radio station">
   <rect x="1660" y="745" width="150" height="150" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
 </g>
-<!-- mic spot (bottom-right corner): reserved, currently no action -->
+<!-- easter egg: invisible mic hit area (no dot) -->
+<g id="micEgg" tabindex="0" role="button" aria-label="Toggle shuffle mode">
+  <rect x="2575" y="1045" width="239" height="491" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
+</g>
 <!-- easter egg: invisible Good Grief album hit area (no dot) -->
 <g id="albumEgg" tabindex="0" role="button" aria-label="Play Salt Then Sour Then Sweet">
   <rect x="2440" y="327" width="321" height="269" fill="#000" fill-opacity="0" pointer-events="all" style="cursor:pointer"/>
@@ -317,6 +320,24 @@
   }
   bindTap(document.getElementById('headphoneEgg'), dialLofi);
 
+  // ---- mic easter egg: toggle single-song / shuffle mode ----
+  // Starts in single-song mode (each hotspot plays its favorite song).
+  // Tap the mic to switch to shuffle mode: each music hotspot then plays
+  // a random track from its album pool. Tap again to switch back.
+  var shuffleMode = false;
+  bindTap(document.getElementById('micEgg'), function(){
+    hideHint();
+    shuffleMode = !shuffleMode;
+    lofiToastMsg('\u266A ' + (shuffleMode ? 'shuffle mode' : 'single song mode'));
+  });
+
+  // ---- shuffle pools: album tracklists for shuffle mode ----
+  // Each music hotspot has a pool of [title, videoId] from its album.
+  // Single-song mode plays the hotspot's favorite; shuffle mode picks
+  // a random track from the pool. All IDs verified embeddable via oEmbed.
+var SHUFFLE_ARTIST = {"sara": "Sara Bareilles", "gravity": "Sara Bareilles", "jewel": "Jewel", "lala": "Justin Hurwitz", "ff7": "Nobuo Uematsu", "jinx": "Arcane: Season 2", "ellie": "Gustavo Santaolalla", "xwing": "John Williams", "r2": "John Williams", "ball": "Slam Dunk"};
+var SHUFFLE_POOLS = {"sara":[["Love Song","qi7Yh16dA0w"],["Brave","QUQsqBqxoR4"],["King of Anything","eR7-AUmiNcA"],["Gravity","rEXhAMtbaec"],["Orpheus","LWMBG1Z0FuE"],["Uncharted","zlxB9zGH8GU"],["I Choose You","xjE5D9cHiOk"],["The Light","R0oieN6ojpQ"],["Gonna Get Over You","OUe3oVlxLSA"],["Salt Then Sour Then Sweet","_kGptPiFO54"]],"gravity":[["Love Song","qi7Yh16dA0w"],["Vegas","5zUE240IFYY"],["Bottle It Up","tf92q6Vrj2o"],["One Sweet Love","_C55DeU568A"],["Come Round Soon","sUZSjlhE-Cg"],["Morningside","-uuCP9kwVcA"],["Between the Lines","SqkOFADXe68"],["Love on the Rocks","PJEudQUakYQ"],["City","D56YE5yHTyI"],["Many the Miles","L-0uUSHa8wY"],["Fairytale","ZJYUgz5xUco"],["Gravity","rEXhAMtbaec"]],"jewel":[["Who Will Save Your Soul","0wBDDAZkNtk"],["Pieces of You","5umlhGtetxY"],["Little Sister","WggLAjP1yug"],["Foolish Games","UNoouLa7uxA"],["Near You Always","hUNQVfHkmS0"],["Painters","0GVav-9tvzY"],["Morning Song","3NqpagCfDoQ"],["Adrian","4dBCbc5DGEM"],["I'm Sensitive","yMbB8bWd6mM"],["You Were Meant for Me","4WW4qcmrJ3E"],["Don't","DUVekuiooBY"],["Daddy","lmefa5D9Na8"],["Angel Standing By","q3XqzOSmWTw"],["Amen","KbmgDrRs1rg"]],"lala":[["Another Day of Sun","WxCz0UNUNeQ"],["Someone in the Crowd","-62YbRZqxjs"],["Mia & Sebastian's Theme","D3ovuBdbUqk"],["A Lovely Night","trrH4sVZ0dQ"],["Herman's Habit","95bQ51-j6x0"],["City of Stars","fQLAyvDNmUU"],["Planetarium","qV1KxmGDkk8"],["Summer Montage / Madeline","hosPgCFl-UI"],["City of Stars","83u8K_hJrxk"],["Start a Fire","dwTRnPtpSSk"],["Engagement Party","qzspvUBLoOY"],["Audition (The Fools Who Dream)","XCf_kdmmVNE"],["Epilogue","L16vTRw9mDQ"],["The End","L8Q5g483gD0"],["City of Stars (Humming)","WPEVYK6ijhw"]],"ff7":[["Opening ~ Bombing Mission","-DRp_XME44o"],["Liberi Fatali","Omo0qGo2KeQ"],["Aerith's Theme","I73aQlljM70"],["Fisherman's Horizon","heShyZMPpqA"],["Don't Be Afraid","l_4buHR8mWU"],["Memoro de la Stono ~ Distant Worlds","FAiFyvro5-4"],["Medley 2002","NQojmY1AD5A"],["Theme of Love","AeXLKUDwesY"],["Vamo' alla Flamenco","hySiB28eS5o"],["Love Grows","-6-cuGbhOmU"],["Opera \"Maria and Draco\"","UuFj3ztpZjc"],["Swing de Chocobo","TghfOfQOcOs"],["One-Winged Angel","zkZGFNCS6iQ"]],"jinx":[["Heavy Is the Crown (Original Score)","gMpEkqbAdzI"],["I Can't Hear It Now","uz1mjoGk1Yg"],["Sucker","8sekyV_o2pM"],["Renegade (We Never Run)","xhkMbMZQV1Q"],["Hellfire","O0qHqHt3JiY"],["To Ashes and Blood","Gj-jmBi0aK8"],["Paint The Town Blue","pl2K9rvsS74"],["这样很好 (Isha's Song)","n68BF6IlGhk"],["Cocktail Molotov","CvgR2TFIHSc"],["What Have They Done to Us","l_ZERCKc8qk"],["Rebel Heart","M41aWQvKSRg"],["The Beast","CCUrsBqFh_8"],["Spin the Wheel","Ns0N8bcB95I"],["Ma Meilleure Ennemie","j-RpvIuazmc"],["Fantastic","ieHUdRGZKiU"],["The Line","E2Rj2gQAyPA"],["Blood Sweat & Tears","aXwoeXetD4A"],["Come Play","3jf6xOg6e7Y"],["Wasteland","mlJWzAOprrI"],["Enemy (Opening Title Version)","UqcE-IIevf0"]],"ellie":[["The Quarantine Zone (20 Years Later)","A3Qvw2ZAxtw"],["The Hour","UwxGmVjNS_8"],["The Last of Us","Y2UOwvUQ8L0"],["Forgotten Memories","2GwFsuGp15Q"],["The Outbreak","FEAcLI_e5AE"],["Vanishing Grace","Wk5m1iMWJnM"],["The Hunters","gGG7ECPtgQg"],["All Gone","2dQ3QP7JIcM"],["Vanishing Grace (Innocence)","OTXhmF9v3Y0"],["By Any Means","Zw_wGQJo5rQ"],["The Choice","vYge_43m_jc"],["Smugglers","L81y7SmbM6I"],["The Last of Us (Never Again)","Svpz2KMpmnE"],["The Last of Us (Goodnight)","bhhSRkQzbwU"],["I Know What You Are","Fxd-uUHMxUg"],["Home","nV8sY2Xv3Os"],["Infected","0K-JqETtQTk"],["All Gone (Aftermath)","wzz5sWMhow0"],["The Last of Us (A New Dawn)","-FDMVFzaIJ4"],["All Gone (No Escape)","Xd-GB_ueJgA"],["Vanishing Grace (Childhood)","lXcnsJ3geMo"],["The Path","YiJkSSXfqOI"],["All Gone (Alone)","0MydzLWjx_8"],["Blackout","K_O-4DlKT30"],["The Way It Was","PHlkg-FYAZQ"],["Breathless","hGw-BYPcax8"],["The Last of Us (You and Me)","s2NdE3axvfI"],["All Gone (The Outside)","UET5C6XHaZE"],["The Path (A New Beginning)","vC4CfQJLhuk"],["Returning","PWJs0Pv-yNE"]],"xwing":[["Main Title","Q0cz6i9K2Ao"],["Imperial Attack","GgNScPVrHUI"],["Princess Leia's Theme","0C1_IK7slEI"],["The Desert and the Robot Auction","gwMaf0tCaN8"],["Ben's Death and TIE Fighter Attack","gP5tKcyNt1E"],["The Little People Work","hIFjHOgc1UI"],["Rescue of the Princess","LVlCA3sX3cc"],["Inner City","AO2eSu8vkCo"],["Cantina Band","Qo28oMO_TT4"],["The Land of the Sandpeople","zD78XUsZxyI"],["Mouse Robot and Blasting Off","u2D-nOU6330"],["The Return Home","o0uTfBySLms"],["The Walls Converge","6IVjh671NJ0"],["The Princess Appears","h3_R4F2dpjM"],["The Last Battle","yO5CHXvSCS8"],["The Throne Room and End Title","Vp3a0ks8q3w"]],"r2":[["Star Wars Main Title and The Arrival at Naboo","hrAtp8dkcL8"],["Duel of the Fates","D_2bluVPsb0"],["Anakin's Theme","WUC7MgkOgKA"],["Jar Jar's Introduction and The Swim to Otoh Gunga","cqh1mKpvzCI"],["The Sith Spacecraft and The Droid Battle","u_mmm2CrCds"],["The Arrival at Tatooine and The Flag Parade","ek8bqQV_zuo"],["He Is the Chosen One","W2AUHTZA89s"],["Anakin Defeats Sebulba","zNIZ_Ym-ECE"],["Passage Through the Planet Core","0OHj4XXytaI"],["Watto's Deal and Kids at Play","gXnY_tVKI1o"],["Panaka and the Queen's Protectors","z3kG8n1zM6Y"],["Queen Amidala and the Naboo Palace","Gfcr1NnoAkw"],["The Droid Invasion and The Appearance of Darth Maul","JP-Phg1hey0"],["Qui-Gon's Noble End","CmVY8YZI_hQ"],["The High Council Meeting and Qui-Gon's Funeral","9ZBihl6gk4c"],["Augie's Great Municipal Band and End Credits","DqLSBS8E7Do"]],"ball":[["Kimi ga Suki da to Sakebitai","2hs8Bec6kHI"],["Anata dake Mitsumeteru","d9eudCNJv1E"],["Sekai ga Owaru made wa","1Bk9YpwWEsg"],["Kirameku Toki ni Torawarete","91-NqsLQjMM"],["Zettai ni Daremo","EMwkq1soGWk"],["My Friend","_A2th9RSL4U"]]};
+
   // ---- hidden YouTube players (mobile-safe music) ----
   // Mobile browsers block autoplay-with-sound for an iframe inserted with
   // ?autoplay=1: the tap gesture is gone by the time the video loads, so
@@ -331,8 +352,8 @@
     for(var i = 0; i < ytPending.length; i++){ ytPending[i](); }
     ytPending = [];
   };
-  function ytEgg(videoId, title){
-    var player = null, ready = false, wantPlay = false, playing = false, timer = null;
+  function ytEgg(videoId, title, poolKey){
+    var player = null, ready = false, wantPlay = false, wantVideoId = null, playing = false, timer = null, lastIdx = -1;
     function create(){
       var holder = document.createElement('div');
       holder.setAttribute('aria-hidden', 'true');
@@ -349,26 +370,42 @@
               f.style.cssText = 'width:2px;height:2px;border:0;opacity:0;pointer-events:none;';
               f.setAttribute('title', title);
             }catch(e){}
-            if(wantPlay){ wantPlay = false; try{ player.playVideo(); }catch(e){} }
+            if(wantPlay){ wantPlay = false; try{ if(wantVideoId){ player.loadVideoById(wantVideoId); wantVideoId = null; } else { player.playVideo(); } }catch(e){} }
           }
         }
       });
     }
     if(window.YT && window.YT.Player){ create(); } else { ytPending.push(create); }
     function stop(){
-      wantPlay = false;
+      wantPlay = false; wantVideoId = null;
       if(timer){ clearTimeout(timer); timer = null; }
       if(playing){
         playing = false;
         if(player && ready){ try{ player.stopVideo(); }catch(e){} }
       }
     }
+    function pickFromPool(){
+      var pool = (poolKey && typeof SHUFFLE_POOLS !== 'undefined') ? SHUFFLE_POOLS[poolKey] : null;
+      if(!pool || pool.length < 2) return null;
+      var idx = Math.floor(Math.random() * pool.length);
+      while(pool.length > 1 && idx === lastIdx){ idx = Math.floor(Math.random() * pool.length); }
+      lastIdx = idx;
+      return pool[idx];
+    }
     function toggle(durationMs, toast){
       if(playing){ stop(); lofiToastMsg(''); return; }
       playing = true;
-      if(player && ready){ try{ player.playVideo(); }catch(e){} }
-      else { wantPlay = true; }
-      lofiToastMsg(toast);
+      var pick = (shuffleMode && poolKey) ? pickFromPool() : null;
+      var msg = toast;
+      if(pick){
+        msg = '\u266A ' + pick[0] + ' \u2014 ' + (SHUFFLE_ARTIST[poolKey] || '');
+        if(player && ready){ try{ player.loadVideoById(pick[1]); }catch(e){} }
+        else { wantPlay = true; wantVideoId = pick[1]; }
+      } else {
+        if(player && ready){ try{ player.playVideo(); }catch(e){} }
+        else { wantPlay = true; }
+      }
+      lofiToastMsg(msg);
       timer = setTimeout(function(){ stop(); lofiToastMsg(''); }, durationMs);
     }
     return { stop: stop, toggle: toggle, isPlaying: function(){ return playing; } };
@@ -385,7 +422,7 @@
   // embeddable per YouTube oEmbed. Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var albumEgg = document.getElementById('albumEgg');
   var SARA_VIDEO = '_kGptPiFO54';
-  var saraEgg_ = ytEgg(SARA_VIDEO, 'Salt Then Sour Then Sweet');
+  var saraEgg_ = ytEgg(SARA_VIDEO, 'Salt Then Sour Then Sweet', 'sara');
   function stopSara(){ saraEgg_.stop(); }
   function toggleSara(){
     hideHint();
@@ -409,7 +446,7 @@
   // embeddable per YouTube oEmbed. Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var gravityEgg = document.getElementById('gravityEgg');
   var GRAVITY_VIDEO = 'rEXhAMtbaec';
-  var gravityEgg_ = ytEgg(GRAVITY_VIDEO, 'Gravity');
+  var gravityEgg_ = ytEgg(GRAVITY_VIDEO, 'Gravity', 'gravity');
   function stopGravity(){ gravityEgg_.stop(); }
   function toggleGravity(){
     hideHint();
@@ -434,7 +471,7 @@
   // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var jewelEgg = document.getElementById('jewelEgg');
   var JEWEL_VIDEO = 'UNoouLa7uxA';
-  var jewelEgg_ = ytEgg(JEWEL_VIDEO, 'Foolish Games');
+  var jewelEgg_ = ytEgg(JEWEL_VIDEO, 'Foolish Games', 'jewel');
   function stopJewel(){ jewelEgg_.stop(); }
   function toggleJewel(){
     hideHint();
@@ -458,7 +495,7 @@
   // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var lalaEgg = document.getElementById('lalaEgg');
   var LALA_VIDEO = 'D3ovuBdbUqk';
-  var lalaEgg_ = ytEgg(LALA_VIDEO, "Mia and Sebastian's Theme");
+  var lalaEgg_ = ytEgg(LALA_VIDEO, "Mia and Sebastian's Theme", 'lala');
   function stopLala(){ lalaEgg_.stop(); }
   function toggleLala(){
     hideHint();
@@ -483,7 +520,7 @@
   // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var ff7Egg = document.getElementById('ff7Egg');
   var FF7_VIDEO = 'I73aQlljM70';
-  var ff7Egg_ = ytEgg(FF7_VIDEO, "Aerith's Theme");
+  var ff7Egg_ = ytEgg(FF7_VIDEO, "Aerith's Theme", 'ff7');
   function stopFf7(){ ff7Egg_.stop(); }
   function toggleFf7(){
     hideHint();
@@ -507,7 +544,7 @@
   // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var jinxEgg = document.getElementById('jinxEgg');
   var JINX_VIDEO = 'pl2K9rvsS74';
-  var jinxEgg_ = ytEgg(JINX_VIDEO, 'Paint The Town Blue');
+  var jinxEgg_ = ytEgg(JINX_VIDEO, 'Paint The Town Blue', 'jinx');
   function stopJinx(){ jinxEgg_.stop(); }
   function toggleJinx(){
     hideHint();
@@ -531,7 +568,7 @@
   // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var ellieEgg = document.getElementById('ellieEgg');
   var ELLIE_VIDEO = 'Pt1pOY3_W64';
-  var ellieEgg_ = ytEgg(ELLIE_VIDEO, 'The Last of Us (Main Theme)');
+  var ellieEgg_ = ytEgg(ELLIE_VIDEO, 'The Last of Us (Main Theme)', 'ellie');
   function stopEllie(){ ellieEgg_.stop(); }
   function toggleEllie(){
     hideHint();
@@ -556,7 +593,7 @@
   // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var xwingEgg = document.getElementById('xwingEgg');
   var XWING_VIDEO = 'MNMSAIG0dfQ';
-  var xwingEgg_ = ytEgg(XWING_VIDEO, 'Star Wars (Main Theme)');
+  var xwingEgg_ = ytEgg(XWING_VIDEO, 'Star Wars (Main Theme)', 'xwing');
   function stopXwing(){ xwingEgg_.stop(); }
   function toggleXwing(){
     hideHint();
@@ -581,7 +618,7 @@
   // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var r2Egg = document.getElementById('r2Egg');
   var R2_VIDEO = 'xlYCxbBZUCY';
-  var r2Egg_ = ytEgg(R2_VIDEO, 'Duel of the Fates');
+  var r2Egg_ = ytEgg(R2_VIDEO, 'Duel of the Fates', 'r2');
   function stopR2(){ r2Egg_.stop(); }
   function toggleR2(){
     hideHint();
@@ -657,7 +694,7 @@
   // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var ballEgg = document.getElementById('ballEgg');
   var BALL_VIDEO = 'DPmCeuOkOEY';
-  var ballEgg_ = ytEgg(BALL_VIDEO, 'Sekai ga Owaru made wa');
+  var ballEgg_ = ytEgg(BALL_VIDEO, 'Sekai ga Owaru made wa', 'ball');
   function stopBall(){ ballEgg_.stop(); }
   function toggleBall(){
     hideHint();
