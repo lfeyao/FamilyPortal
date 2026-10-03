@@ -317,20 +317,79 @@
   }
   bindTap(document.getElementById('headphoneEgg'), dialLofi);
 
+  // ---- hidden YouTube players (mobile-safe music) ----
+  // Mobile browsers block autoplay-with-sound for an iframe inserted with
+  // ?autoplay=1: the tap gesture is gone by the time the video loads, so
+  // nothing plays (desktop only works via Chrome's engagement heuristic).
+  // Instead we pre-create one hidden YT.Player per track and call
+  // playVideo() synchronously inside the tap handler — a real user gesture
+  // that iOS/Android honor. playsinline keeps iOS from jumping to fullscreen.
+  var ytApiReady = false;
+  var ytPending = [];
+  window.onYouTubeIframeAPIReady = function(){
+    ytApiReady = true;
+    for(var i = 0; i < ytPending.length; i++){ ytPending[i](); }
+    ytPending = [];
+  };
+  function ytEgg(videoId, title){
+    var player = null, ready = false, wantPlay = false, playing = false, timer = null;
+    function create(){
+      var holder = document.createElement('div');
+      holder.setAttribute('aria-hidden', 'true');
+      holder.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;overflow:hidden;pointer-events:none;';
+      document.body.appendChild(holder);
+      player = new YT.Player(holder, {
+        videoId: videoId,
+        playerVars: { autoplay: 0, rel: 0, playsinline: 1 },
+        events: {
+          onReady: function(){
+            ready = true;
+            try{
+              var f = player.getIframe();
+              f.style.cssText = 'width:2px;height:2px;border:0;opacity:0;pointer-events:none;';
+              f.setAttribute('title', title);
+            }catch(e){}
+            if(wantPlay){ wantPlay = false; try{ player.playVideo(); }catch(e){} }
+          }
+        }
+      });
+    }
+    if(window.YT && window.YT.Player){ create(); } else { ytPending.push(create); }
+    function stop(){
+      wantPlay = false;
+      if(timer){ clearTimeout(timer); timer = null; }
+      if(playing){
+        playing = false;
+        if(player && ready){ try{ player.stopVideo(); }catch(e){} }
+      }
+    }
+    function toggle(durationMs, toast){
+      if(playing){ stop(); lofiToastMsg(''); return; }
+      playing = true;
+      if(player && ready){ try{ player.playVideo(); }catch(e){} }
+      else { wantPlay = true; }
+      lofiToastMsg(toast);
+      timer = setTimeout(function(){ stop(); lofiToastMsg(''); }, durationMs);
+    }
+    return { stop: stop, toggle: toggle, isPlaying: function(){ return playing; } };
+  }
+  (function(){
+    var s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    s.async = true;
+    document.head.appendChild(s);
+  })();
+
   // ---- album easter egg: Good Grief frame plays Sara Bareilles ----
   // Salt Then Sour Then Sweet (feat. Brandi Carlile) — official audio,
-  // embeddable per YouTube oEmbed. Hidden 2px iframe; the tap is the
-  // user gesture that permits autoplay with sound.
+  // embeddable per YouTube oEmbed. Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var albumEgg = document.getElementById('albumEgg');
-  var saraFrame = null, saraTimer = null;
   var SARA_VIDEO = '_kGptPiFO54';
-  function stopSara(){
-    if(saraFrame){ saraFrame.remove(); saraFrame = null; }
-    if(saraTimer){ clearTimeout(saraTimer); saraTimer = null; }
-  }
+  var saraEgg_ = ytEgg(SARA_VIDEO, 'Salt Then Sour Then Sweet');
+  function stopSara(){ saraEgg_.stop(); }
   function toggleSara(){
     hideHint();
-    if(saraFrame){ stopSara(); lofiToastMsg(''); return; }
+    if(saraEgg_.isPlaying()){ stopSara(); lofiToastMsg(''); return; }
     stopGravity();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
     stopJewel();
@@ -341,31 +400,20 @@
     stopXwing();
     stopR2();
     stopBall();
-    saraFrame = document.createElement('iframe');
-    saraFrame.setAttribute('src', 'https://www.youtube.com/embed/' + SARA_VIDEO + '?autoplay=1&rel=0');
-    saraFrame.setAttribute('allow', 'autoplay; encrypted-media');
-    saraFrame.setAttribute('title', 'Salt Then Sour Then Sweet');
-    saraFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(saraFrame);
-    lofiToastMsg('\u266A Salt Then Sour Then Sweet \u2014 Sara Bareilles');
-    saraTimer = setTimeout(function(){ stopSara(); lofiToastMsg(''); }, 210000);
+    saraEgg_.toggle(210000, '\u266A Salt Then Sour Then Sweet \u2014 Sara Bareilles');
   }
   bindTap(albumEgg, toggleSara);
 
   // ---- gravity easter egg: Little Voice album plays Gravity ----
   // Gravity (Official HD Video, SaraBareillesVEVO),
-  // embeddable per YouTube oEmbed. Hidden 2px iframe; the tap is the
-  // user gesture that permits autoplay with sound.
+  // embeddable per YouTube oEmbed. Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var gravityEgg = document.getElementById('gravityEgg');
-  var gravityFrame = null, gravityTimer = null;
   var GRAVITY_VIDEO = 'rEXhAMtbaec';
-  function stopGravity(){
-    if(gravityFrame){ gravityFrame.remove(); gravityFrame = null; }
-    if(gravityTimer){ clearTimeout(gravityTimer); gravityTimer = null; }
-  }
+  var gravityEgg_ = ytEgg(GRAVITY_VIDEO, 'Gravity');
+  function stopGravity(){ gravityEgg_.stop(); }
   function toggleGravity(){
     hideHint();
-    if(gravityFrame){ stopGravity(); lofiToastMsg(''); return; }
+    if(gravityEgg_.isPlaying()){ stopGravity(); lofiToastMsg(''); return; }
     stopSara();
     stopJewel();
     stopLala();
@@ -376,31 +424,21 @@
     stopR2();
     stopBall();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
-    gravityFrame = document.createElement('iframe');
-    gravityFrame.setAttribute('src', 'https://www.youtube.com/embed/' + GRAVITY_VIDEO + '?autoplay=1&rel=0');
-    gravityFrame.setAttribute('allow', 'autoplay; encrypted-media');
-    gravityFrame.setAttribute('title', 'Gravity');
-    gravityFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(gravityFrame);
-    lofiToastMsg('\u266A Gravity \u2014 Sara Bareilles');
-    gravityTimer = setTimeout(function(){ stopGravity(); lofiToastMsg(''); }, 235000);
+    gravityEgg_.toggle(235000, '\u266A Gravity \u2014 Sara Bareilles');
   }
   bindTap(gravityEgg, toggleGravity);
 
   // ---- jewel easter egg: Jewel poster plays Foolish Games ----
   // Foolish Games (Official HD Music Video, Jewel channel),
   // embeddable per YouTube oEmbed.
-  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var jewelEgg = document.getElementById('jewelEgg');
-  var jewelFrame = null, jewelTimer = null;
   var JEWEL_VIDEO = 'UNoouLa7uxA';
-  function stopJewel(){
-    if(jewelFrame){ jewelFrame.remove(); jewelFrame = null; }
-    if(jewelTimer){ clearTimeout(jewelTimer); jewelTimer = null; }
-  }
+  var jewelEgg_ = ytEgg(JEWEL_VIDEO, 'Foolish Games');
+  function stopJewel(){ jewelEgg_.stop(); }
   function toggleJewel(){
     hideHint();
-    if(jewelFrame){ stopJewel(); lofiToastMsg(''); return; }
+    if(jewelEgg_.isPlaying()){ stopJewel(); lofiToastMsg(''); return; }
     stopSara();
     stopLala();
     stopFf7();
@@ -411,30 +449,20 @@
     stopBall();
     stopGravity();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
-    jewelFrame = document.createElement('iframe');
-    jewelFrame.setAttribute('src', 'https://www.youtube.com/embed/' + JEWEL_VIDEO + '?autoplay=1&rel=0');
-    jewelFrame.setAttribute('allow', 'autoplay; encrypted-media');
-    jewelFrame.setAttribute('title', 'Foolish Games');
-    jewelFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(jewelFrame);
-    lofiToastMsg('\u266A Foolish Games \u2014 Jewel');
-    jewelTimer = setTimeout(function(){ stopJewel(); lofiToastMsg(''); }, 260000);
+    jewelEgg_.toggle(260000, '\u266A Foolish Games \u2014 Jewel');
   }
   bindTap(jewelEgg, toggleJewel);
 
   // ---- la la land easter egg: record sleeve plays Mia & Sebastian's Theme ----
   // Justin Hurwitz - Topic audio, embeddable per YouTube oEmbed.
-  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var lalaEgg = document.getElementById('lalaEgg');
-  var lalaFrame = null, lalaTimer = null;
   var LALA_VIDEO = 'D3ovuBdbUqk';
-  function stopLala(){
-    if(lalaFrame){ lalaFrame.remove(); lalaFrame = null; }
-    if(lalaTimer){ clearTimeout(lalaTimer); lalaTimer = null; }
-  }
+  var lalaEgg_ = ytEgg(LALA_VIDEO, "Mia and Sebastian's Theme");
+  function stopLala(){ lalaEgg_.stop(); }
   function toggleLala(){
     hideHint();
-    if(lalaFrame){ stopLala(); lofiToastMsg(''); return; }
+    if(lalaEgg_.isPlaying()){ stopLala(); lofiToastMsg(''); return; }
     stopSara();
     stopJewel();
     stopFf7();
@@ -445,31 +473,21 @@
     stopBall();
     stopGravity();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
-    lalaFrame = document.createElement('iframe');
-    lalaFrame.setAttribute('src', 'https://www.youtube.com/embed/' + LALA_VIDEO + '?autoplay=1&rel=0');
-    lalaFrame.setAttribute('allow', 'autoplay; encrypted-media');
-    lalaFrame.setAttribute('title', "Mia and Sebastian's Theme");
-    lalaFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(lalaFrame);
-    lofiToastMsg('\u266A Mia & Sebastian\u2019s Theme \u2014 Justin Hurwitz');
-    lalaTimer = setTimeout(function(){ stopLala(); lofiToastMsg(''); }, 110000);
+    lalaEgg_.toggle(110000, '\u266A Mia & Sebastian\u2019s Theme \u2014 Justin Hurwitz');
   }
   bindTap(lalaEgg, toggleLala);
 
   // ---- ff7 easter egg: FF7 poster plays Aerith's Theme ----
   // Aerith's Theme (Final Fantasy VII) - Nobuo Uematsu - Topic audio,
   // embeddable per YouTube oEmbed (Distant Worlds orchestral release).
-  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var ff7Egg = document.getElementById('ff7Egg');
-  var ff7Frame = null, ff7Timer = null;
   var FF7_VIDEO = 'I73aQlljM70';
-  function stopFf7(){
-    if(ff7Frame){ ff7Frame.remove(); ff7Frame = null; }
-    if(ff7Timer){ clearTimeout(ff7Timer); ff7Timer = null; }
-  }
+  var ff7Egg_ = ytEgg(FF7_VIDEO, "Aerith's Theme");
+  function stopFf7(){ ff7Egg_.stop(); }
   function toggleFf7(){
     hideHint();
-    if(ff7Frame){ stopFf7(); lofiToastMsg(''); return; }
+    if(ff7Egg_.isPlaying()){ stopFf7(); lofiToastMsg(''); return; }
     stopSara();
     stopJewel();
     stopLala();
@@ -480,30 +498,20 @@
     stopBall();
     stopGravity();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
-    ff7Frame = document.createElement('iframe');
-    ff7Frame.setAttribute('src', 'https://www.youtube.com/embed/' + FF7_VIDEO + '?autoplay=1&rel=0');
-    ff7Frame.setAttribute('allow', 'autoplay; encrypted-media');
-    ff7Frame.setAttribute('title', "Aerith's Theme");
-    ff7Frame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(ff7Frame);
-    lofiToastMsg('\u266A Aerith\u2019s Theme \u2014 Nobuo Uematsu');
-    ff7Timer = setTimeout(function(){ stopFf7(); lofiToastMsg(''); }, 360000);
+    ff7Egg_.toggle(360000, '\u266A Aerith\u2019s Theme \u2014 Nobuo Uematsu');
   }
   bindTap(ff7Egg, toggleFf7);
 
   // ---- jinx easter egg: postcard plays Paint The Town Blue (Arcane S2) ----
   // Official Netflix music video, embeddable per YouTube oEmbed.
-  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var jinxEgg = document.getElementById('jinxEgg');
-  var jinxFrame = null, jinxTimer = null;
   var JINX_VIDEO = 'pl2K9rvsS74';
-  function stopJinx(){
-    if(jinxFrame){ jinxFrame.remove(); jinxFrame = null; }
-    if(jinxTimer){ clearTimeout(jinxTimer); jinxTimer = null; }
-  }
+  var jinxEgg_ = ytEgg(JINX_VIDEO, 'Paint The Town Blue');
+  function stopJinx(){ jinxEgg_.stop(); }
   function toggleJinx(){
     hideHint();
-    if(jinxFrame){ stopJinx(); lofiToastMsg(''); return; }
+    if(jinxEgg_.isPlaying()){ stopJinx(); lofiToastMsg(''); return; }
     stopSara();
     stopJewel();
     stopLala();
@@ -514,30 +522,20 @@
     stopBall();
     stopGravity();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
-    jinxFrame = document.createElement('iframe');
-    jinxFrame.setAttribute('src', 'https://www.youtube.com/embed/' + JINX_VIDEO + '?autoplay=1&rel=0');
-    jinxFrame.setAttribute('allow', 'autoplay; encrypted-media');
-    jinxFrame.setAttribute('title', 'Paint The Town Blue');
-    jinxFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(jinxFrame);
-    lofiToastMsg('\u266A Paint The Town Blue \u2014 Ashnikko');
-    jinxTimer = setTimeout(function(){ stopJinx(); lofiToastMsg(''); }, 140000);
+    jinxEgg_.toggle(140000, '\u266A Paint The Town Blue \u2014 Ashnikko');
   }
   bindTap(jinxEgg, toggleJinx);
 
   // ---- ellie easter egg: statue plays The Last of Us (Main Theme) ----
   // Gustavo Santaolalla (SonySoundtracksVEVO), embeddable per YouTube oEmbed.
-  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var ellieEgg = document.getElementById('ellieEgg');
-  var ellieFrame = null, ellieTimer = null;
   var ELLIE_VIDEO = 'Pt1pOY3_W64';
-  function stopEllie(){
-    if(ellieFrame){ ellieFrame.remove(); ellieFrame = null; }
-    if(ellieTimer){ clearTimeout(ellieTimer); ellieTimer = null; }
-  }
+  var ellieEgg_ = ytEgg(ELLIE_VIDEO, 'The Last of Us (Main Theme)');
+  function stopEllie(){ ellieEgg_.stop(); }
   function toggleEllie(){
     hideHint();
-    if(ellieFrame){ stopEllie(); lofiToastMsg(''); return; }
+    if(ellieEgg_.isPlaying()){ stopEllie(); lofiToastMsg(''); return; }
     stopSara();
     stopJewel();
     stopLala();
@@ -548,31 +546,21 @@
     stopBall();
     stopGravity();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
-    ellieFrame = document.createElement('iframe');
-    ellieFrame.setAttribute('src', 'https://www.youtube.com/embed/' + ELLIE_VIDEO + '?autoplay=1&rel=0');
-    ellieFrame.setAttribute('allow', 'autoplay; encrypted-media');
-    ellieFrame.setAttribute('title', 'The Last of Us (Main Theme)');
-    ellieFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(ellieFrame);
-    lofiToastMsg('\u266A The Last of Us (Main Theme) \u2014 Gustavo Santaolalla');
-    ellieTimer = setTimeout(function(){ stopEllie(); lofiToastMsg(''); }, 250000);
+    ellieEgg_.toggle(250000, '\u266A The Last of Us (Main Theme) \u2014 Gustavo Santaolalla');
   }
   bindTap(ellieEgg, toggleEllie);
 
   // ---- x-wing easter egg: model plays Star Wars (Main Theme) ----
   // John Williams & London Symphony Orchestra - Topic audio,
   // embeddable per YouTube oEmbed.
-  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var xwingEgg = document.getElementById('xwingEgg');
-  var xwingFrame = null, xwingTimer = null;
   var XWING_VIDEO = 'MNMSAIG0dfQ';
-  function stopXwing(){
-    if(xwingFrame){ xwingFrame.remove(); xwingFrame = null; }
-    if(xwingTimer){ clearTimeout(xwingTimer); xwingTimer = null; }
-  }
+  var xwingEgg_ = ytEgg(XWING_VIDEO, 'Star Wars (Main Theme)');
+  function stopXwing(){ xwingEgg_.stop(); }
   function toggleXwing(){
     hideHint();
-    if(xwingFrame){ stopXwing(); lofiToastMsg(''); return; }
+    if(xwingEgg_.isPlaying()){ stopXwing(); lofiToastMsg(''); return; }
     stopSara();
     stopJewel();
     stopLala();
@@ -583,31 +571,21 @@
     stopBall();
     stopGravity();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
-    xwingFrame = document.createElement('iframe');
-    xwingFrame.setAttribute('src', 'https://www.youtube.com/embed/' + XWING_VIDEO + '?autoplay=1&rel=0');
-    xwingFrame.setAttribute('allow', 'autoplay; encrypted-media');
-    xwingFrame.setAttribute('title', 'Star Wars (Main Theme)');
-    xwingFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(xwingFrame);
-    lofiToastMsg('\u266A Star Wars (Main Theme) \u2014 John Williams');
-    xwingTimer = setTimeout(function(){ stopXwing(); lofiToastMsg(''); }, 370000);
+    xwingEgg_.toggle(370000, '\u266A Star Wars (Main Theme) \u2014 John Williams');
   }
   bindTap(xwingEgg, toggleXwing);
 
   // ---- r2-d2 easter egg: figure plays Duel of the Fates ----
   // John Williams / LSO concert-suite recording,
   // embeddable per YouTube oEmbed.
-  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var r2Egg = document.getElementById('r2Egg');
-  var r2Frame = null, r2Timer = null;
   var R2_VIDEO = 'xlYCxbBZUCY';
-  function stopR2(){
-    if(r2Frame){ r2Frame.remove(); r2Frame = null; }
-    if(r2Timer){ clearTimeout(r2Timer); r2Timer = null; }
-  }
+  var r2Egg_ = ytEgg(R2_VIDEO, 'Duel of the Fates');
+  function stopR2(){ r2Egg_.stop(); }
   function toggleR2(){
     hideHint();
-    if(r2Frame){ stopR2(); lofiToastMsg(''); return; }
+    if(r2Egg_.isPlaying()){ stopR2(); lofiToastMsg(''); return; }
     stopSara();
     stopJewel();
     stopLala();
@@ -618,14 +596,7 @@
     stopBall();
     stopGravity();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
-    r2Frame = document.createElement('iframe');
-    r2Frame.setAttribute('src', 'https://www.youtube.com/embed/' + R2_VIDEO + '?autoplay=1&rel=0');
-    r2Frame.setAttribute('allow', 'autoplay; encrypted-media');
-    r2Frame.setAttribute('title', 'Duel of the Fates');
-    r2Frame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(r2Frame);
-    lofiToastMsg('\u266A Duel of the Fates \u2014 John Williams');
-    r2Timer = setTimeout(function(){ stopR2(); lofiToastMsg(''); }, 260000);
+    r2Egg_.toggle(260000, '\u266A Duel of the Fates \u2014 John Williams');
   }
   bindTap(r2Egg, toggleR2);
 
@@ -683,17 +654,14 @@
   // ---- basketball easter egg: ball plays Sekai ga Owaru made wa... ----
   // WANDS, 2nd ending theme of the Slam Dunk anime (original 1994 recording),
   // embeddable per YouTube oEmbed.
-  // Hidden 2px iframe; the tap is the user gesture that permits autoplay.
+  // Hidden YT.Player; playVideo() fires inside the tap gesture so mobile browsers allow sound.
   var ballEgg = document.getElementById('ballEgg');
-  var ballFrame = null, ballTimer = null;
   var BALL_VIDEO = 'DPmCeuOkOEY';
-  function stopBall(){
-    if(ballFrame){ ballFrame.remove(); ballFrame = null; }
-    if(ballTimer){ clearTimeout(ballTimer); ballTimer = null; }
-  }
+  var ballEgg_ = ytEgg(BALL_VIDEO, 'Sekai ga Owaru made wa');
+  function stopBall(){ ballEgg_.stop(); }
   function toggleBall(){
     hideHint();
-    if(ballFrame){ stopBall(); lofiToastMsg(''); return; }
+    if(ballEgg_.isPlaying()){ stopBall(); lofiToastMsg(''); return; }
     stopSara();
     stopJewel();
     stopLala();
@@ -704,14 +672,7 @@
     stopR2();
     stopGravity();
     if(lofiIdx >= 0){ lofiIdx = -1; lofiAudio.pause(); lofiAudio.removeAttribute('src'); }
-    ballFrame = document.createElement('iframe');
-    ballFrame.setAttribute('src', 'https://www.youtube.com/embed/' + BALL_VIDEO + '?autoplay=1&rel=0');
-    ballFrame.setAttribute('allow', 'autoplay; encrypted-media');
-    ballFrame.setAttribute('title', 'Sekai ga Owaru made wa');
-    ballFrame.style.cssText = 'position:absolute;width:2px;height:2px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(ballFrame);
-    lofiToastMsg('\u266A \u4e16\u754c\u304c\u7d42\u308b\u307e\u3067\u306f\u2026 \u2014 WANDS (Slam Dunk)');
-    ballTimer = setTimeout(function(){ stopBall(); lofiToastMsg(''); }, 260000);
+    ballEgg_.toggle(260000, '\u266A \u4e16\u754c\u304c\u7d42\u308b\u307e\u3067\u306f\u2026 \u2014 WANDS (Slam Dunk)');
   }
   bindTap(ballEgg, toggleBall);
 
