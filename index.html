@@ -402,8 +402,11 @@ var SHUFFLE_POOLS = {"sara":[["Home","ZvfNLSytHzI"],["Just a Kid","7GWHExrNNew"]
         if(player && ready){ try{ player.loadVideoById(pick[1]); }catch(e){} }
         else { wantPlay = true; wantVideoId = pick[1]; }
       } else {
-        if(player && ready){ try{ player.playVideo(); }catch(e){} }
-        else { wantPlay = true; }
+        // Favorite mode: explicitly (re)load the favorite track — the player
+        // may still hold a shuffled pick from shuffle mode, and playVideo()
+        // alone would resume that instead of the favorite.
+        if(player && ready){ try{ player.loadVideoById(videoId); }catch(e){} }
+        else { wantPlay = true; wantVideoId = videoId; }
       }
       lofiToastMsg(msg);
       timer = setTimeout(function(){ stop(); lofiToastMsg(''); }, durationMs);
